@@ -5,9 +5,9 @@ export default function SubjectCardsGrid({
     showHighRiskOnly = false,
 }) {
     function getRisk(requiredFinal) {
-        if (requiredFinal >= 75) return { label: "High Risk", cls: "bg-red-500/20 text-red-300 border-red-500/30 shadow-sm shadow-red-500/10" };
-        if (requiredFinal >= 60) return { label: "Medium", cls: "bg-yellow-500/20 text-yellow-300 border-yellow-500/30 shadow-sm shadow-yellow-500/10" };
-        return { label: "Safe", cls: "bg-green-500/20 text-green-300 border-green-500/30 shadow-sm shadow-green-500/10" };
+        if (requiredFinal >= 75) return { label: "High Risk", cls: "bg-red-500/10 text-red-500 border-red-500/20 shadow-sm" };
+        if (requiredFinal >= 60) return { label: "Medium", cls: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20 shadow-sm" };
+        return { label: "Safe", cls: "bg-[#22c55e]/10 text-[#22c55e] border-[#22c55e]/20 shadow-sm" };
     }
 
     const sorted = [...subjects].sort((a, b) => {
@@ -26,7 +26,7 @@ export default function SubjectCardsGrid({
         <div className="glass rounded-3xl p-6">
             <div className="flex items-center justify-between">
                 <h2 className="text-xl font-extrabold text-white">All Subjects</h2>
-                <div className="px-3 py-1 bg-white/10 rounded-full text-xs font-bold text-white/70 shadow-sm border border-white/5">
+                <div className="px-3 py-1 bg-[#1a1a1a] rounded-full text-xs font-bold text-[#a3a3a3] shadow-sm border border-[#333333]">
                     {filtered.length} subjects
                 </div>
             </div>
@@ -39,9 +39,9 @@ export default function SubjectCardsGrid({
                     return (
                         <div
                             key={s.subjectId}
-                            className={`relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-5 hover-lift animate-fade-in ${delayClass} backdrop-blur-md shadow-lg group`}
+                            className={`relative overflow-hidden rounded-2xl border border-[#333333] bg-[#1a1a1a] p-5 hover-lift animate-fade-in ${delayClass} shadow-lg group hover:bg-[#232323]`}
                         >
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none transition-transform group-hover:scale-150 duration-700"></div>
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-[#22c55e]/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none transition-transform group-hover:scale-150 duration-700"></div>
 
                             <div className="flex items-start justify-between gap-3 relative z-10">
                                 <div>
@@ -49,10 +49,10 @@ export default function SubjectCardsGrid({
                                         {s.subjectName}
                                     </div>
                                     <div className="mt-2 flex flex-wrap gap-2">
-                                        <span className="rounded-xl border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white/70 shadow-sm">
+                                        <span className="rounded-xl border border-[#333333] bg-[#232323] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#a3a3a3] shadow-sm">
                                             Credits: <span className="text-white">{s.credits}</span>
                                         </span>
-                                        <span className="rounded-xl border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white/70 shadow-sm">
+                                        <span className="rounded-xl border border-[#333333] bg-[#232323] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#a3a3a3] shadow-sm">
                                             Diff: <span className="text-white">{s.difficulty}</span>
                                         </span>
                                     </div>
@@ -64,19 +64,19 @@ export default function SubjectCardsGrid({
                             </div>
 
                             <div className="mt-5 grid grid-cols-2 gap-4 relative z-10">
-                                <div className="rounded-xl bg-white/5 p-3 border border-white/10 shadow-sm text-center">
-                                    <div className="text-[10px] font-bold uppercase tracking-widest text-white/50 mb-1">CA Marks</div>
+                                <div className="rounded-xl bg-[#232323] p-3 border border-[#333333] shadow-sm text-center">
+                                    <div className="text-[10px] font-bold uppercase tracking-widest text-[#a3a3a3] mb-1">CA Marks</div>
                                     <div className="text-xl font-extrabold text-white">{s.caMarks}</div>
                                 </div>
-                                <div className="rounded-xl bg-blue-500/10 p-3 border border-blue-500/20 shadow-sm text-center">
-                                    <div className="text-[10px] font-bold uppercase tracking-widest text-blue-300 mb-1">Req. Final</div>
-                                    <div className="text-xl font-extrabold text-blue-400">{s.requiredFinal}</div>
+                                <div className="rounded-xl bg-[#22c55e]/10 p-3 border border-[#22c55e]/20 shadow-sm text-center">
+                                    <div className="text-[10px] font-bold uppercase tracking-widest text-[#22c55e]/80 mb-1">Req. Final</div>
+                                    <div className="text-xl font-extrabold text-[#22c55e]">{s.requiredFinal}</div>
                                 </div>
                             </div>
 
                             <button
                                 onClick={() => onSimulate?.(s.subjectId)}
-                                className="mt-5 w-full rounded-xl bg-white border border-white px-4 py-2.5 text-sm font-bold text-[#0F172A] transition-all hover:bg-slate-200 hover:text-black relative z-10 shadow-sm hover:shadow"
+                                className="mt-5 w-full rounded-xl bg-[#22c55e] border border-[#22c55e] px-4 py-2.5 text-sm font-bold text-black transition-all hover:bg-[#16a34a] relative z-10 shadow-sm hover:shadow uppercase tracking-wider"
                             >
                                 Simulate
                             </button>
@@ -85,7 +85,7 @@ export default function SubjectCardsGrid({
                 })}
 
                 {!filtered.length ? (
-                    <div className="col-span-full rounded-2xl border-2 border-dashed border-white/20 bg-white/5 p-8 text-center text-sm font-medium text-white/60 animate-fade-in">
+                    <div className="col-span-full rounded-2xl border-2 border-dashed border-[#333333] bg-[#1a1a1a] p-8 text-center text-sm font-medium text-[#a3a3a3] animate-fade-in">
                         No subjects match your filters.
                     </div>
                 ) : null}

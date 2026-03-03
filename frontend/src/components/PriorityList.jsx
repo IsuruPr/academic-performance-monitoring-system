@@ -7,13 +7,13 @@ function ImpactBar({ value }) {
 
   return (
     <div className="w-full">
-      <div className="h-2.5 w-full rounded-full bg-white/10 shadow-inner overflow-hidden">
+      <div className="h-2 w-full rounded-full bg-[#333333] shadow-inner overflow-hidden">
         <div
           className={`h-full rounded-full bg-gradient-to-r ${tone} shadow-sm transition-all duration-1000 ease-out`}
           style={{ width: `${pct}%` }}
         />
       </div>
-      <div className="mt-1.5 text-right text-[10px] font-bold uppercase tracking-wider text-white/50">Impact: <span className="text-white/80">{v.toFixed?.(1) ?? v}</span></div>
+      <div className="mt-1.5 text-right text-[10px] font-bold uppercase tracking-wider text-[#a3a3a3]">Impact: <span className="text-white">{v.toFixed?.(1) ?? v}</span></div>
     </div>
   );
 }
@@ -23,7 +23,7 @@ export default function PriorityList({ items = [] }) {
     <div className="glass rounded-3xl p-6">
       <div className="flex items-center justify-between mb-5">
         <h2 className="text-xl font-extrabold text-white">Study Priorities</h2>
-        <span className="bg-white/10 border border-white/5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-white/80 shadow-inner">Focus on high-impact</span>
+        <span className="bg-[#1a1a1a] border border-[#333333] px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-[#22c55e] shadow-inner">Focus on high-impact</span>
       </div>
 
       <div className="space-y-4">
@@ -33,24 +33,24 @@ export default function PriorityList({ items = [] }) {
           items.map((s, idx) => {
             const delayClass = `stagger-${Math.min(idx + 1, 5)}`;
             return (
-              <div key={s.subjectId ?? idx} className={`rounded-2xl border border-white/10 bg-white/5 p-4 shadow-md backdrop-blur-md transition-all hover:bg-white/10 hover:shadow-lg animate-slide-in-right ${delayClass}`}>
+              <div key={s.subjectId ?? idx} className={`rounded-2xl border border-[#333333] bg-[#1a1a1a] p-4 shadow-md transition-all hover:bg-[#232323] hover:shadow-lg animate-slide-in-right ${delayClass}`}>
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
-                      <div className="flex items-center justify-center w-6 h-6 rounded-full bg-white text-[#0F172A] text-xs font-bold leading-none shadow-md">
+                      <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#22c55e] text-black text-xs font-bold leading-none shadow-md">
                         {idx + 1}
                       </div>
                       <div className="font-extrabold text-white text-base">{s.subjectName}</div>
-                      <span className="rounded-lg bg-white/10 px-2 py-0.5 text-[10px] font-bold text-white/80 border border-white/10">
+                      <span className="rounded-lg bg-[#232323] px-2 py-0.5 text-[10px] font-bold text-[#a3a3a3] border border-[#333333]">
                         CR: {s.credits}
                       </span>
                     </div>
-                    <div className="mt-2 text-sm text-white/60 font-medium flex flex-wrap items-center gap-2">
+                    <div className="mt-2 text-sm text-[#a3a3a3] font-medium flex flex-wrap items-center gap-2">
                       <span>Required Final:</span>
-                      <span className="text-lg font-extrabold text-[#3b82f6] bg-[#3b82f6]/10 px-2 py-0.5 rounded-lg border border-[#3b82f6]/20">
+                      <span className="text-lg font-extrabold text-[#22c55e] bg-[#22c55e]/10 px-2 py-0.5 rounded-lg border border-[#22c55e]/20">
                         {s.requiredFinal}
                       </span>
-                      <span className="text-xs text-white/60 bg-white/10 px-2 py-0.5 rounded-lg border border-white/5">
+                      <span className="text-xs text-[#a3a3a3] bg-[#232323] px-2 py-0.5 rounded-lg border border-[#333333]">
                         CA: {s.caMarks}
                       </span>
                     </div>

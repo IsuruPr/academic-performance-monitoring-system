@@ -34,7 +34,7 @@ export default function AnalyticsCharts({ plan }) {
             {
                 label: "GPA",
                 data: [plan.currentGpa, plan.targetGpa],
-                backgroundColor: ["rgba(255, 255, 255, 0.5)", "rgba(59, 130, 246, 0.8)"],
+                backgroundColor: ["rgba(163, 163, 163, 0.5)", "rgba(34, 197, 94, 0.8)"],
                 borderRadius: 8,
             },
         ],
@@ -64,9 +64,9 @@ export default function AnalyticsCharts({ plan }) {
             {
                 label: "Required Final",
                 data: subjects.map((s) => s.requiredFinal),
-                backgroundColor: "rgba(59, 130, 246, 0.2)",
-                borderColor: "rgba(59, 130, 246, 0.8)",
-                pointBackgroundColor: "rgba(255, 255, 255, 0.8)",
+                backgroundColor: "rgba(34, 197, 94, 0.2)",
+                borderColor: "rgba(34, 197, 94, 0.8)",
+                pointBackgroundColor: "rgba(34, 197, 94, 1)",
                 borderWidth: 2,
             },
         ],
@@ -93,16 +93,16 @@ export default function AnalyticsCharts({ plan }) {
 
     return (
         <div className="grid gap-6 lg:grid-cols-2">
-            <div className="glass rounded-3xl p-6 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
+            <div className="rounded-3xl border border-[#333333] bg-[#1a1a1a] p-6 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-[#22c55e]/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
                 <h3 className="mb-4 text-lg font-extrabold text-white relative z-10">
                     GPA Progress
                 </h3>
                 <div className="relative z-10"><Bar data={barData} options={barOptions} /></div>
             </div>
 
-            <div className="glass rounded-3xl p-6 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
+            <div className="rounded-3xl border border-[#333333] bg-[#1a1a1a] p-6 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-[#22c55e]/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
                 <h3 className="mb-4 text-lg font-extrabold text-white relative z-10">
                     Subject Final Requirement Radar
                 </h3>

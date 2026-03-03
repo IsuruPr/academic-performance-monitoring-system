@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import { mockEnrollments, mockTargets } from "./mockData.js";
 import { calculatePlan, simulateWhatIf } from "./optimizer.service.js";
+import { generateStudyPlan } from "./ai.service.js";
 
 const app = express();
 app.use(cors());
@@ -64,6 +65,25 @@ app.post("/api/optimizer/whatif", (req, res) => {
   if (!target) return res.status(404).json({ message: "No target GPA found (mock)" });
 
   return res.json(simulateWhatIf(subjects, target.targetGpa, subjectId, assumedFinal));
+});
+
+/* ✅ POST /api/ai/study-plan  body: { currentGpa, targetGpa, gap, priority } */
+app.post("/api/ai/study-plan", async (req, res) => {
+  try {
+    const planData = req.body;
+
+    // Basic verification
+    if (!planData || !planData.priority || !planData.priority.length) {
+      return res.status(400).json({ message: "Invalid plan data provided for AI generation." });
+    }
+
+    const aiPlanMarkdown = await generateStudyPlan(planData);
+
+    return res.json({ markdown: aiPlanMarkdown });
+  } catch (error) {
+    console.error("AI Route Error:", error);
+    return res.status(500).json({ message: error.message || "Failed to generate AI study plan." });
+  }
 });
 
 const PORT = 5000;

@@ -38,27 +38,24 @@ export default function SemesterSelect() {
 
     return (
         <div className="min-h-screen relative overflow-hidden flex items-center p-6 font-sans">
-            <div className="absolute top-[10%] left-[20%] w-[60%] h-[60%] rounded-full bg-[#1E3A8A]/30 blur-[150px] pointer-events-none"></div>
-
             <div className="mx-auto w-full max-w-7xl pt-24 grid lg:grid-cols-2 gap-16 lg:gap-8 items-center relative z-10">
 
                 {/* Left Column matching the reference image */}
                 <div className="animate-slide-in-right text-left flex flex-col justify-center max-w-xl">
-                    <h1 className="text-6xl sm:text-7xl lg:text-[5rem] font-extrabold text-white leading-[1.05] tracking-tight mb-6 mt-12 bg-clip-text">
-                        Simple.<br />Smart.<br />Success.
+                    <h1 className="text-6xl sm:text-7xl lg:text-[5rem] font-extrabold text-white leading-[1.05] tracking-tight mb-6 mt-12">
+                        Simple.<br />Smart.<br /><span className="text-[#22c55e]">Success.</span>
                     </h1>
                     <p className="text-sm sm:text-base font-medium text-white/50 max-w-md mb-10 leading-relaxed">
                         Navigate your academic journey with advanced insights, targeted goals, and intelligent semester optimization.
                     </p>
-                    <button className="rounded-full bg-white px-8 py-4 text-sm font-bold text-[#0F172A] hover:bg-slate-100 hover:shadow-xl transition-all w-fit shadow-lg shadow-[#1E3A8A]/20">
+                    <button className="rounded-lg border-2 border-[#22c55e] bg-transparent text-[#22c55e] px-8 py-4 text-sm font-bold hover:bg-[#22c55e] hover:text-black transition-all w-fit uppercase tracking-wider">
                         Explore our services
                     </button>
                 </div>
 
                 {/* Right Column: Functional Form Block inside new dark glass style */}
                 <div className="w-full max-w-md mx-auto relative z-10 animate-slide-up">
-                    <div className="glass rounded-[2rem] p-10 relative overflow-hidden shadow-2xl">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
+                    <div className="glass rounded-3xl p-10 relative overflow-hidden shadow-2xl bg-[#1a1a1a]">
 
                         <div className="text-[11px] font-bold uppercase tracking-widest text-white/50 mb-2">Welcome to</div>
                         <h2 className="text-3xl font-extrabold text-white mb-2 pb-1 tracking-tight">
@@ -81,7 +78,7 @@ export default function SemesterSelect() {
                                 <label className="text-[11px] font-bold text-white/70 ml-2">SELECT SEMESTER</label>
                                 <div className="relative mt-3">
                                     <select
-                                        className="w-full rounded-2xl border border-white/10 bg-white/5 px-5 py-4 font-bold text-white outline-none focus:ring-2 focus:ring-white/30 cursor-pointer appearance-none transition-all hover:bg-white/10 focus:bg-[#0F172A]"
+                                        className="w-full rounded-xl border border-[#333333] bg-[#232323] px-5 py-4 font-bold text-white outline-none focus:ring-2 focus:ring-[#22c55e] cursor-pointer appearance-none transition-all hover:bg-[#2a2a2a]"
                                         value={selected}
                                         onChange={(e) => setSelected(e.target.value)}
                                     >
@@ -99,7 +96,7 @@ export default function SemesterSelect() {
 
                                 <button
                                     onClick={onContinue}
-                                    className="mt-8 w-full rounded-full bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-4 font-black text-white shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 hover-lift flex items-center justify-center gap-2 group transition-all"
+                                    className="mt-8 w-full rounded-xl bg-[#22c55e] px-6 py-4 font-black text-black shadow-lg shadow-[#22c55e]/20 hover:shadow-[#22c55e]/40 hover:bg-[#16a34a] flex items-center justify-center gap-2 group transition-all uppercase tracking-widest"
                                 >
                                     Access System
                                     <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>

@@ -11,9 +11,9 @@ export default function WhatIfPanel({
   const isGood = gapVal <= 0;
   const isOkay = gapVal > 0 && gapVal <= 0.3;
 
-  const msgClass = isGood ? "text-green-300 bg-green-500/20 border-green-500/30 shadow-sm shadow-green-500/10" :
-    isOkay ? "text-yellow-300 bg-yellow-500/20 border-yellow-500/30 shadow-sm shadow-yellow-500/10" :
-      "text-red-300 bg-red-500/20 border-red-500/30 shadow-sm shadow-red-500/10";
+  const msgClass = isGood ? "text-[#22c55e] bg-[#22c55e]/10 border-[#22c55e]/30 shadow-sm" :
+    isOkay ? "text-yellow-500 bg-yellow-500/10 border-yellow-500/30 shadow-sm" :
+      "text-red-500 bg-red-500/10 border-red-500/30 shadow-sm";
 
   const msgIcon = isGood ? "✨" : isOkay ? "🎯" : "⚠️";
 
@@ -23,8 +23,7 @@ export default function WhatIfPanel({
         "Need more improvement — focus on high impact subjects.";
 
   return (
-    <div className="glass rounded-3xl p-6 relative overflow-hidden animate-slide-in-right stagger-2">
-      <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+    <div className="glass rounded-3xl p-6 relative overflow-hidden animate-slide-in-right stagger-2 bg-[#232323]">
 
       <h2 className="text-xl font-extrabold text-white relative z-10">What-If Simulator</h2>
       <p className="mt-2 text-sm text-white/60 font-medium relative z-10">
@@ -36,12 +35,12 @@ export default function WhatIfPanel({
           <label className="text-[11px] font-bold uppercase tracking-wider text-white/50">Select Subject</label>
           <div className="relative">
             <select
-              className="w-full rounded-2xl border border-white/10 bg-[#0B132B] px-4 py-3 font-bold text-white outline-none focus:ring-2 focus:ring-white/30 cursor-pointer shadow-inner appearance-none transition-all hover:bg-[#0B132B]/80"
+              className="w-full rounded-2xl border border-[#333333] bg-[#1a1a1a] px-4 py-3 font-bold text-white outline-none focus:ring-2 focus:ring-[#22c55e] cursor-pointer shadow-inner appearance-none transition-all hover:bg-[#232323]"
               value={selectedSubjectId}
               onChange={(e) => onChangeSubject(e.target.value)}
             >
               {subjects.map((s) => (
-                <option key={s.subjectId} value={s.subjectId} className="bg-[#0B132B]">
+                <option key={s.subjectId} value={s.subjectId} className="bg-[#1a1a1a]">
                   {s.subjectName}
                 </option>
               ))}
@@ -63,7 +62,7 @@ export default function WhatIfPanel({
               onChange={(e) => onChangeFinal(Number(e.target.value))}
               className="w-full flex-grow mt-2"
             />
-            <div className="w-16 h-12 flex items-center justify-center bg-white text-[#0F172A] rounded-2xl font-black text-xl shadow-lg shadow-black/30">
+            <div className="w-16 h-12 flex items-center justify-center bg-[#22c55e] text-black rounded-xl font-black text-xl shadow-lg shadow-[#22c55e]/20">
               {assumedFinal}
             </div>
           </div>
@@ -76,13 +75,13 @@ export default function WhatIfPanel({
       </div>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 relative z-10">
-        <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-4 shadow-sm hover:shadow-lg transition-shadow relative overflow-hidden group">
-          <div className="text-[10px] font-bold uppercase tracking-wider text-white/50 mb-1">New Current GPA</div>
+        <div className="rounded-2xl border border-[#333333] bg-[#1a1a1a] p-4 shadow-sm hover:shadow-lg transition-shadow relative overflow-hidden group">
+          <div className="text-[10px] font-bold uppercase tracking-wider text-[#a3a3a3] mb-1">New Current GPA</div>
           <div className="text-3xl font-black text-white transition-transform group-hover:scale-105 origin-left">{Number(liveCurrentGpa ?? 0).toFixed(2)}</div>
         </div>
-        <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-4 shadow-sm hover:shadow-lg transition-shadow relative overflow-hidden group">
-          <div className="text-[10px] font-bold uppercase tracking-wider text-white/50 mb-1">New Gap</div>
-          <div className={`text-3xl font-black transition-transform group-hover:scale-105 origin-left ${isGood ? 'text-green-400' : isOkay ? 'text-yellow-400' : 'text-red-400'}`}>
+        <div className="rounded-2xl border border-[#333333] bg-[#1a1a1a] p-4 shadow-sm hover:shadow-lg transition-shadow relative overflow-hidden group">
+          <div className="text-[10px] font-bold uppercase tracking-wider text-[#a3a3a3] mb-1">New Gap</div>
+          <div className={`text-3xl font-black transition-transform group-hover:scale-105 origin-left ${isGood ? 'text-[#22c55e]' : isOkay ? 'text-yellow-500' : 'text-red-500'}`}>
             {gapVal >= 0 ? `+${gapVal.toFixed(2)}` : gapVal.toFixed(2)}
           </div>
         </div>

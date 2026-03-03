@@ -2,9 +2,7 @@
 
 @layer utilities {
     .glass {
-        @apply backdrop-blur-2xl border border-white/10 relative overflow-hidden;
-        background: linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(15, 23, 42, 0.4));
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), inset 0px 1px 1px rgba(255, 255, 255, 0.15);
+        @apply bg-[#232323] border border-[#333333] relative overflow-hidden;
         border-radius: 1.5rem;
     }
 
@@ -12,48 +10,34 @@
     .glass-red::before,
     .glass-green::before,
     .glass-blue::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 50%;
-        height: 100%;
-        background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.15), transparent);
-        transform: skewX(-20deg);
-        animation: shine 6s infinite;
-        pointer-events: none;
+        display: none;
     }
 
     .glass-dark {
-        @apply backdrop-blur-2xl border border-white/10 relative overflow-hidden;
-        background: linear-gradient(145deg, rgba(15, 23, 42, 0.6), rgba(2, 6, 23, 0.8));
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), inset 0px 1px 1px rgba(255, 255, 255, 0.1);
+        @apply bg-[#1a1a1a] border border-[#333333] relative overflow-hidden;
         border-radius: 1.5rem;
     }
 
     .glass-red {
-        @apply backdrop-blur-2xl border border-white/10 relative overflow-hidden text-white;
-        background: linear-gradient(145deg, rgba(220, 38, 38, 0.4), rgba(153, 27, 27, 0.8));
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0px 1px 1px rgba(255, 255, 255, 0.15);
+        @apply bg-[#1a1a1a]/70 backdrop-blur-2xl border border-red-500/40 shadow-[0_8px_32px_0_rgba(239, 68, 68, 0.1)] relative overflow-hidden text-white;
         border-radius: 1.5rem;
+        box-shadow: inset 0 0 20px rgba(239, 68, 68, 0.05), 0 8px 32px 0 rgba(239, 68, 68, 0.1);
     }
 
     .glass-green {
-        @apply backdrop-blur-2xl border border-white/10 relative overflow-hidden text-white;
-        background: linear-gradient(145deg, rgba(34, 197, 94, 0.4), rgba(22, 163, 74, 0.8));
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0px 1px 1px rgba(255, 255, 255, 0.15);
+        @apply bg-[#1a1a1a]/70 backdrop-blur-2xl border border-green-500/40 shadow-[0_8px_32px_0_rgba(34, 197, 94, 0.1)] relative overflow-hidden text-white;
         border-radius: 1.5rem;
+        box-shadow: inset 0 0 20px rgba(34, 197, 94, 0.05), 0 8px 32px 0 rgba(34, 197, 94, 0.1);
     }
 
     .glass-blue {
-        @apply backdrop-blur-2xl border border-white/10 relative overflow-hidden text-white;
-        background: linear-gradient(145deg, rgba(59, 130, 246, 0.4), rgba(30, 58, 138, 0.8));
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0px 1px 1px rgba(255, 255, 255, 0.15);
+        @apply bg-[#1a1a1a]/70 backdrop-blur-2xl border border-[#3b82f6]/40 shadow-[0_8px_32px_0_rgba(59, 130, 246, 0.1)] relative overflow-hidden text-white;
         border-radius: 1.5rem;
+        box-shadow: inset 0 0 20px rgba(59, 130, 246, 0.05), 0 8px 32px 0 rgba(59, 130, 246, 0.1);
     }
 
     .text-gradient {
-        @apply bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70;
+        @apply bg-clip-text text-transparent bg-linear-to-r from-white to-white/70;
     }
 
     .hover-lift {
@@ -158,17 +142,16 @@
 
 /* Custom Range Slider */
 input[type=range] {
-    @apply appearance-none bg-white/20 h-2 rounded-full outline-none;
+    @apply appearance-none bg-[#333333] h-2 rounded-full outline-none;
 }
 
 input[type=range]::-webkit-slider-thumb {
-    @apply appearance-none w-6 h-6 rounded-full bg-white cursor-pointer shadow-md transition-transform hover:scale-110 active:scale-95;
+    @apply appearance-none w-6 h-6 rounded-full bg-[#22c55e] cursor-pointer shadow-md transition-transform hover:scale-110 active:scale-95;
 }
 
 body {
-    @apply text-white antialiased selection:bg-[#2563EB] selection:text-white;
-    background: radial-gradient(circle at 40% -10%, #3b82f6 0%, #1e3a8a 25%, #0f172a 50%, #020617 100%);
-    background-attachment: fixed;
+    @apply text-white antialiased selection:bg-[#22c55e] selection:text-black;
+    background-color: #121212;
     font-family: 'Poppins', system-ui, sans-serif;
     min-height: 100vh;
 }

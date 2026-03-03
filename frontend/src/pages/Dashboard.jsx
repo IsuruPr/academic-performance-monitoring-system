@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { fetchPlan, fetchWhatIf } from "../api/optimizerApi";
+import { fetchPlan, fetchWhatIf, fetchAiStudyPlan } from "../api/optimizerApi";
+import ReactMarkdown from "react-markdown";
 import SummaryCards from "../components/SummaryCards";
 import PriorityList from "../components/PriorityList";
 import WhatIfPanel from "../components/WhatIfPanel";
@@ -27,6 +28,25 @@ export default function Dashboard() {
   // Live output after what-if
   const [liveCurrentGpa, setLiveCurrentGpa] = useState(null);
   const [liveGap, setLiveGap] = useState(null);
+
+  // AI Plan Generation State
+  const [isGeneratingAi, setIsGeneratingAi] = useState(false);
+  const [aiPlanString, setAiPlanString] = useState("");
+  const [showAiModal, setShowAiModal] = useState(false);
+
+  const handleGenerateAiPlan = async () => {
+    if (!plan) return;
+    try {
+      setIsGeneratingAi(true);
+      setShowAiModal(true); // show modal immediately for loading state
+      const data = await fetchAiStudyPlan(plan);
+      setAiPlanString(data.markdown);
+    } catch (e) {
+      setAiPlanString("Failed to generate study plan: " + e.message);
+    } finally {
+      setIsGeneratingAi(false);
+    }
+  };
 
   // ✅ Redirect if no semester selected
   useEffect(() => {
@@ -120,8 +140,8 @@ export default function Dashboard() {
         <div className="mb-8 flex flex-col gap-1 stagger-1">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h1 className="text-4xl font-extrabold tracking-tight text-gradient mb-1">
-                Dashboard Overview
+              <h1 className="text-4xl font-extrabold tracking-tight text-white mb-1">
+                Dashboard <span className="text-[#22c55e]">Overview</span>
               </h1>
               <p className="text-sm font-medium text-white/60">
                 Smart plan • Priorities • Real-time simulation
@@ -145,8 +165,8 @@ export default function Dashboard() {
             onClick={() => setActiveTab("all")}
             className={`rounded-2xl px-5 py-2.5 text-sm font-bold border transition-all duration-300
               ${activeTab === "all"
-                ? "bg-white/20 text-white border-white/30 shadow-lg shadow-black/20 -translate-y-0.5"
-                : "bg-white/5 text-white/60 border-white/10 hover:bg-white/10 hover:text-white backdrop-blur-sm"
+                ? "bg-[#22c55e] text-black border-[#22c55e] shadow-lg shadow-[#22c55e]/20 -translate-y-0.5"
+                : "bg-transparent text-white/60 border-[#333333] hover:bg-[#232323] hover:text-white"
               }`}
           >
             All Subjects
@@ -156,8 +176,8 @@ export default function Dashboard() {
             onClick={() => setActiveTab("single")}
             className={`rounded-2xl px-5 py-2.5 text-sm font-bold border transition-all duration-300
               ${activeTab === "single"
-                ? "bg-white/20 text-white border-white/30 shadow-lg shadow-black/20 -translate-y-0.5"
-                : "bg-white/5 text-white/60 border-white/10 hover:bg-white/10 hover:text-white backdrop-blur-sm"
+                ? "bg-[#22c55e] text-black border-[#22c55e] shadow-lg shadow-[#22c55e]/20 -translate-y-0.5"
+                : "bg-transparent text-white/60 border-[#333333] hover:bg-[#232323] hover:text-white"
               }`}
           >
             Single Subject
@@ -165,7 +185,7 @@ export default function Dashboard() {
 
           <div className="ml-auto text-sm text-white/50 flex items-center">
             Semester:
-            <span className="ml-2 rounded-full bg-white/10 border border-white/10 px-3 py-1 text-white">
+            <span className="ml-2 rounded-full bg-[#232323] border border-[#333333] px-3 py-1 text-[#22c55e] font-bold">
               {semesterId}
             </span>
           </div>
@@ -186,12 +206,12 @@ export default function Dashboard() {
                     <select
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value)}
-                      className="rounded-2xl border border-white/10 bg-[#0F172A] px-4 py-2 text-sm font-bold text-white shadow-sm outline-none focus:ring-2 focus:ring-white/30 cursor-pointer"
+                      className="rounded-xl border border-[#333333] bg-[#1a1a1a] px-4 py-2 text-sm font-bold text-white shadow-sm outline-none focus:ring-2 focus:ring-[#22c55e] cursor-pointer"
                     >
-                      <option value="priority" className="bg-[#0F172A]">Sort: Priority</option>
-                      <option value="requiredFinal" className="bg-[#0F172A]">Sort: Required Final</option>
-                      <option value="credits" className="bg-[#0F172A]">Sort: Credits</option>
-                      <option value="difficulty" className="bg-[#0F172A]">Sort: Difficulty</option>
+                      <option value="priority" className="bg-[#1a1a1a]">Sort: Priority</option>
+                      <option value="requiredFinal" className="bg-[#1a1a1a]">Sort: Required Final</option>
+                      <option value="credits" className="bg-[#1a1a1a]">Sort: Credits</option>
+                      <option value="difficulty" className="bg-[#1a1a1a]">Sort: Difficulty</option>
                     </select>
 
                     <label className="flex items-center gap-2 text-sm font-bold text-white/70 cursor-pointer hover:text-white transition-colors">
@@ -222,20 +242,28 @@ export default function Dashboard() {
             <div className="space-y-8">
               <PriorityList items={plan?.priority ?? []} />
 
-              <div className="glass rounded-3xl p-6 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-white/10 to-blue-500/10 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-150 duration-700"></div>
+              <div className="glass rounded-3xl p-6 relative overflow-hidden group border-[#333333]">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-[#22c55e]/10 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-150 duration-700 pointer-events-none"></div>
                 <h2 className="text-xl font-extrabold text-white relative z-10">
                   Quick What-If
                 </h2>
                 <p className="mt-2 text-sm text-white/60 font-medium relative z-10">
                   Switch to Single Subject mode to simulate exam marks and predict your GPA instantly.
                 </p>
-                <button
-                  onClick={() => setActiveTab("single")}
-                  className="mt-6 w-full rounded-full bg-white px-5 py-3 font-bold text-[#0F172A] shadow-lg shadow-black/20 hover:shadow-black/40 hover-lift relative z-10"
-                >
-                  Open Simulator ✨
-                </button>
+                <div className="flex gap-4 mt-6">
+                  <button
+                    onClick={() => setActiveTab("single")}
+                    className="flex-1 rounded-xl bg-[#232323] px-3 py-3 font-bold text-white shadow-sm border border-[#333333] hover:bg-[#333333] transition-all relative z-10 uppercase tracking-widest text-xs"
+                  >
+                    Simulator Mode
+                  </button>
+                  <button
+                    onClick={handleGenerateAiPlan}
+                    className="flex-1 rounded-xl bg-[#22c55e] px-3 py-3 font-bold text-black shadow-lg shadow-[#22c55e]/20 hover:shadow-[#22c55e]/40 hover-lift relative z-10 uppercase tracking-widest text-xs flex items-center justify-center gap-2"
+                  >
+                    AI Strategy ✨
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -250,12 +278,12 @@ export default function Dashboard() {
               </h2>
 
               <select
-                className="mt-4 w-full rounded-2xl border border-white/10 bg-[#0B132B] px-4 py-3 font-bold text-white outline-none focus:ring-2 focus:ring-white/30 cursor-pointer shadow-inner appearance-none"
+                className="mt-4 w-full rounded-xl border border-[#333333] bg-[#1a1a1a] px-4 py-3 font-bold text-white outline-none focus:ring-2 focus:ring-[#22c55e] cursor-pointer shadow-inner appearance-none"
                 value={selectedSubjectId}
                 onChange={(e) => setSelectedSubjectId(e.target.value)}
               >
                 {(plan?.requiredFinals ?? []).map((s) => (
-                  <option key={s.subjectId} value={s.subjectId} className="bg-[#0B132B]">
+                  <option key={s.subjectId} value={s.subjectId} className="bg-[#1a1a1a]">
                     {s.subjectName}
                   </option>
                 ))}
@@ -273,23 +301,23 @@ export default function Dashboard() {
                   );
 
                 return (
-                  <div className="mt-6 rounded-2xl bg-white/5 border border-white/10 p-5 shadow-sm animate-fade-in backdrop-blur-md">
-                    <div className="text-lg font-extrabold text-white">
+                  <div className="mt-6 rounded-2xl bg-[#1a1a1a] border border-[#333333] p-5 shadow-sm animate-fade-in">
+                    <div className="text-lg font-extrabold text-[#22c55e]">
                       {s.subjectName}
                     </div>
                     <div className="mt-4 flex gap-4 text-sm font-bold text-white/70">
-                      <div className="bg-white/10 rounded-xl px-3 py-1.5 shadow-sm border border-white/5">Credits: <span className="font-extrabold text-white">{s.credits}</span></div>
-                      <div className="bg-white/10 rounded-xl px-3 py-1.5 shadow-sm border border-white/5">Difficulty: <span className="font-extrabold text-white">{s.difficulty}</span></div>
+                      <div className="bg-[#232323] rounded-xl px-3 py-1.5 shadow-sm border border-[#333333]">Credits: <span className="font-extrabold text-white">{s.credits}</span></div>
+                      <div className="bg-[#232323] rounded-xl px-3 py-1.5 shadow-sm border border-[#333333]">Difficulty: <span className="font-extrabold text-white">{s.difficulty}</span></div>
                     </div>
                     <div className="mt-4 grid grid-cols-2 gap-4">
-                      <div className="bg-white/5 rounded-xl p-3 shadow-sm border border-white/10 text-center">
+                      <div className="bg-[#232323] rounded-xl p-3 shadow-sm border border-[#333333] text-center">
                         <div className="text-xs text-white/50 font-extrabold uppercase tracking-wider mb-1">CA Marks</div>
                         <div className="text-xl font-bold text-white">{s.caMarks}</div>
                       </div>
-                      <div className="bg-white/10 rounded-xl p-3 shadow-sm border border-white/20 text-center relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-12 h-12 bg-white/20 rounded-full blur-xl -mr-6 -mt-6"></div>
-                        <div className="text-xs text-white/50 font-extrabold uppercase tracking-wider mb-1 relative z-10">Required Final</div>
-                        <div className="text-xl font-extrabold text-white relative z-10">{s.requiredFinal}</div>
+                      <div className="bg-[#22c55e]/10 rounded-xl p-3 shadow-sm border border-[#22c55e]/20 text-center relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-12 h-12 bg-[#22c55e]/20 rounded-full blur-xl -mr-6 -mt-6"></div>
+                        <div className="text-xs text-[#22c55e]/80 font-extrabold uppercase tracking-wider mb-1 relative z-10">Required Final</div>
+                        <div className="text-xl font-extrabold text-[#22c55e] relative z-10">{s.requiredFinal}</div>
                       </div>
                     </div>
                   </div>
@@ -313,6 +341,59 @@ export default function Dashboard() {
           <AnalyticsCharts plan={plan} />
         </div>
       </div>
+
+      {/* AI Modal Overlay */}
+      {showAiModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-[#121212] border border-[#333333] rounded-3xl w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden relative">
+            <div className="p-6 border-b border-[#333333] flex justify-between items-center bg-[#1a1a1a] shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#22c55e]/10 flex items-center justify-center border border-[#22c55e]/20">
+                  <span className="text-xl">✨</span>
+                </div>
+                <div>
+                  <h2 className="text-xl font-extrabold text-white">AI Action Plan</h2>
+                  <p className="text-xs text-[#22c55e] font-bold uppercase tracking-widest mt-1">Generated by AcadamiX Intelligence</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowAiModal(false)}
+                className="text-white/50 hover:text-white bg-[#232323] hover:bg-[#333333] rounded-full w-10 h-10 flex items-center justify-center transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-8 overflow-y-auto no-scrollbar flex-1">
+              {isGeneratingAi ? (
+                <div className="flex flex-col items-center justify-center h-full text-center py-20">
+                  <div className="w-16 h-16 border-4 border-[#333333] border-t-[#22c55e] rounded-full animate-spin mb-6"></div>
+                  <h3 className="text-xl font-bold text-white mb-2">Analyzing your profile...</h3>
+                  <p className="text-[#a3a3a3]">Synthesizing priority requirements and generating your tailored strategy.</p>
+                </div>
+              ) : (
+                <div className="prose prose-invert prose-green max-w-none 
+                  prose-headings:text-white prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl 
+                  prose-strong:text-[#22c55e] prose-a:text-[#22c55e] hover:prose-a:text-white
+                  prose-ul:border-l-2 prose-ul:border-[#333333] prose-ul:pl-4
+                  prose-li:marker:text-[#22c55e] prose-hr:border-[#333333]
+                  prose-p:text-[#d4d4d4] prose-p:leading-relaxed">
+                  <ReactMarkdown>{aiPlanString}</ReactMarkdown>
+                </div>
+              )}
+            </div>
+
+            <div className="p-6 border-t border-[#333333] bg-[#1a1a1a] flex justify-end shrink-0">
+              <button
+                onClick={() => setShowAiModal(false)}
+                className="rounded-lg bg-[#22c55e] px-6 py-2.5 font-bold text-black shadow-sm transition-all hover:bg-[#16a34a] uppercase tracking-wider text-sm"
+              >
+                Close Plan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

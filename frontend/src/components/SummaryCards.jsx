@@ -3,15 +3,14 @@ export default function SummaryCards({ currentGpa, targetGpa, gap }) {
   const targetVal = Number(targetGpa ?? 0);
   const gapVal = Number(gap ?? 0);
 
-  const isDanger = currentVal < targetVal;
-  const currentClass = isDanger ? "glass-red" : "glass";
+  const currentClass = "glass-red";
   const targetClass = "glass-green";
   const gapClass = "glass-blue";
 
-  const Card = ({ title, value, sub, customClass, delay }) => {
+  const Card = ({ title, value, sub, customClass, delay, glowClass }) => {
     return (
       <div className={`${customClass || 'glass'} p-6 hover-lift animate-slide-up ${delay || ''}`}>
-        <div className="absolute -right-6 -top-6 h-32 w-32 rounded-full bg-white/10 blur-3xl pointer-events-none"></div>
+        <div className={`absolute -right-6 -top-6 h-32 w-32 rounded-full blur-3xl pointer-events-none ${glowClass}`}></div>
 
         <div className="text-sm font-bold tracking-wide uppercase text-white/50 relative z-10">{title}</div>
         <div className="mt-3 text-5xl font-black tracking-tight text-white relative z-10">{value}</div>
@@ -28,6 +27,7 @@ export default function SummaryCards({ currentGpa, targetGpa, gap }) {
         sub="Based on CA + baseline final"
         customClass={currentClass}
         delay="stagger-1"
+        glowClass="bg-red-500/10"
       />
       <Card
         title="Target GPA"
@@ -35,6 +35,7 @@ export default function SummaryCards({ currentGpa, targetGpa, gap }) {
         sub="Your goal for this semester"
         customClass={targetClass}
         delay="stagger-2"
+        glowClass="bg-green-500/10"
       />
       <Card
         title="Gap"
@@ -42,6 +43,7 @@ export default function SummaryCards({ currentGpa, targetGpa, gap }) {
         sub={gapVal <= 0 ? "You are on track 🎉" : "Improvement needed"}
         customClass={gapClass}
         delay="stagger-3"
+        glowClass="bg-[#3b82f6]/10"
       />
     </div>
   );
