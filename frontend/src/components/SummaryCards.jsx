@@ -1,43 +1,46 @@
 export default function SummaryCards({ currentGpa, targetGpa, gap }) {
+  const currentVal = Number(currentGpa ?? 0);
+  const targetVal = Number(targetGpa ?? 0);
   const gapVal = Number(gap ?? 0);
 
-  const gapTone =
-    gapVal <= 0
-      ? "from-emerald-500 to-green-400 text-white shadow-green-500/30"
-      : gapVal <= 0.3
-        ? "from-amber-400 to-orange-400 text-white shadow-orange-500/30"
-        : "from-red-500 to-rose-400 text-white shadow-red-500/30";
+  const isDanger = currentVal < targetVal;
+  const currentClass = isDanger ? "glass-red" : "glass";
+  const targetClass = "glass-green";
+  const gapClass = "glass-blue";
 
-  const Card = ({ title, value, sub, customClass, delay }) => (
-    <div className={`relative overflow-hidden rounded-3xl p-6 shadow-xl hover-lift animate-slide-up bg-white border border-white/40 ${customClass} ${delay}`}>
-      {/* Decorative gradient orb */}
-      <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-white/10 blur-2xl"></div>
+  const Card = ({ title, value, sub, customClass, delay }) => {
+    return (
+      <div className={`${customClass || 'glass'} p-6 hover-lift animate-slide-up ${delay || ''}`}>
+        <div className="absolute -right-6 -top-6 h-32 w-32 rounded-full bg-white/10 blur-3xl pointer-events-none"></div>
 
-      <div className={`text-sm font-medium ${customClass ? 'text-white/80' : 'text-slate-500'}`}>{title}</div>
-      <div className="mt-2 text-4xl font-bold tracking-tight">{value}</div>
-      {sub ? <div className={`mt-2 text-xs font-medium ${customClass ? 'text-white/90' : 'text-slate-400'}`}>{sub}</div> : null}
-    </div>
-  );
+        <div className="text-sm font-bold tracking-wide uppercase text-white/50 relative z-10">{title}</div>
+        <div className="mt-3 text-5xl font-black tracking-tight text-white relative z-10">{value}</div>
+        {sub ? <div className="mt-3 text-xs font-bold text-white/70 relative z-10">{sub}</div> : null}
+      </div>
+    );
+  };
 
   return (
     <div className="grid gap-5 sm:grid-cols-3">
       <Card
         title="Current GPA (Est)"
-        value={currentGpa?.toFixed?.(2) ?? currentGpa ?? "-"}
+        value={currentVal.toFixed(2)}
         sub="Based on CA + baseline final"
+        customClass={currentClass}
         delay="stagger-1"
       />
       <Card
         title="Target GPA"
-        value={targetGpa?.toFixed?.(2) ?? targetGpa ?? "-"}
+        value={targetVal.toFixed(2)}
         sub="Your goal for this semester"
+        customClass={targetClass}
         delay="stagger-2"
       />
       <Card
         title="Gap"
         value={(gapVal >= 0 ? `+${gapVal.toFixed(2)}` : gapVal.toFixed(2))}
         sub={gapVal <= 0 ? "You are on track 🎉" : "Improvement needed"}
-        customClass={`bg-gradient-to-br ${gapTone}`}
+        customClass={gapClass}
         delay="stagger-3"
       />
     </div>

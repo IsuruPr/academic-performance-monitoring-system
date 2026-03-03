@@ -5,9 +5,9 @@ export default function SubjectCardsGrid({
     showHighRiskOnly = false,
 }) {
     function getRisk(requiredFinal) {
-        if (requiredFinal >= 75) return { label: "High Risk", cls: "bg-red-50 text-red-600 border-red-200/50 shadow-sm shadow-red-100" };
-        if (requiredFinal >= 60) return { label: "Medium", cls: "bg-amber-50 text-amber-600 border-amber-200/50 shadow-sm shadow-amber-100" };
-        return { label: "Safe", cls: "bg-emerald-50 text-emerald-600 border-emerald-200/50 shadow-sm shadow-emerald-100" };
+        if (requiredFinal >= 75) return { label: "High Risk", cls: "bg-red-500/20 text-red-300 border-red-500/30 shadow-sm shadow-red-500/10" };
+        if (requiredFinal >= 60) return { label: "Medium", cls: "bg-yellow-500/20 text-yellow-300 border-yellow-500/30 shadow-sm shadow-yellow-500/10" };
+        return { label: "Safe", cls: "bg-green-500/20 text-green-300 border-green-500/30 shadow-sm shadow-green-500/10" };
     }
 
     const sorted = [...subjects].sort((a, b) => {
@@ -25,8 +25,8 @@ export default function SubjectCardsGrid({
     return (
         <div className="glass rounded-3xl p-6">
             <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-slate-800">All Subjects</h2>
-                <div className="px-3 py-1 bg-white/60 rounded-full text-xs font-bold text-slate-600 shadow-sm border border-slate-200/50">
+                <h2 className="text-xl font-extrabold text-white">All Subjects</h2>
+                <div className="px-3 py-1 bg-white/10 rounded-full text-xs font-bold text-white/70 shadow-sm border border-white/5">
                     {filtered.length} subjects
                 </div>
             </div>
@@ -39,21 +39,21 @@ export default function SubjectCardsGrid({
                     return (
                         <div
                             key={s.subjectId}
-                            className={`relative overflow-hidden rounded-2xl border border-white/60 bg-white/40 p-5 hover-lift animate-fade-in ${delayClass} backdrop-blur-[2px]`}
+                            className={`relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-5 hover-lift animate-fade-in ${delayClass} backdrop-blur-md shadow-lg group`}
                         >
-                            <div className="absolute top-0 right-0 w-24 h-24 bg-white/40 rounded-full blur-xl -mr-10 -mt-10 pointer-events-none"></div>
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none transition-transform group-hover:scale-150 duration-700"></div>
 
                             <div className="flex items-start justify-between gap-3 relative z-10">
                                 <div>
-                                    <div className="text-lg font-bold text-slate-800">
+                                    <div className="text-lg font-extrabold text-white">
                                         {s.subjectName}
                                     </div>
                                     <div className="mt-2 flex flex-wrap gap-2">
-                                        <span className="rounded-xl border border-slate-200/60 bg-white/80 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-600 shadow-sm">
-                                            Credits: <span className="text-slate-900">{s.credits}</span>
+                                        <span className="rounded-xl border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white/70 shadow-sm">
+                                            Credits: <span className="text-white">{s.credits}</span>
                                         </span>
-                                        <span className="rounded-xl border border-slate-200/60 bg-white/80 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-600 shadow-sm">
-                                            Diff: <span className="text-slate-900">{s.difficulty}</span>
+                                        <span className="rounded-xl border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white/70 shadow-sm">
+                                            Diff: <span className="text-white">{s.difficulty}</span>
                                         </span>
                                     </div>
                                 </div>
@@ -64,19 +64,19 @@ export default function SubjectCardsGrid({
                             </div>
 
                             <div className="mt-5 grid grid-cols-2 gap-4 relative z-10">
-                                <div className="rounded-xl bg-slate-50/80 p-3 border border-slate-100/50 shadow-sm text-center">
-                                    <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">CA Marks</div>
-                                    <div className="text-xl font-extrabold text-slate-700">{s.caMarks}</div>
+                                <div className="rounded-xl bg-white/5 p-3 border border-white/10 shadow-sm text-center">
+                                    <div className="text-[10px] font-bold uppercase tracking-widest text-white/50 mb-1">CA Marks</div>
+                                    <div className="text-xl font-extrabold text-white">{s.caMarks}</div>
                                 </div>
-                                <div className="rounded-xl bg-blue-50/50 p-3 border border-blue-100/50 shadow-sm text-center">
-                                    <div className="text-[10px] font-bold uppercase tracking-widest text-blue-400/80 mb-1">Req. Final</div>
-                                    <div className="text-xl font-extrabold text-blue-600">{s.requiredFinal}</div>
+                                <div className="rounded-xl bg-blue-500/10 p-3 border border-blue-500/20 shadow-sm text-center">
+                                    <div className="text-[10px] font-bold uppercase tracking-widest text-blue-300 mb-1">Req. Final</div>
+                                    <div className="text-xl font-extrabold text-blue-400">{s.requiredFinal}</div>
                                 </div>
                             </div>
 
                             <button
                                 onClick={() => onSimulate?.(s.subjectId)}
-                                className="mt-5 w-full rounded-xl bg-white border border-slate-200 px-4 py-2.5 text-sm font-bold text-blue-600 transition-all hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700 relative z-10 shadow-sm hover:shadow"
+                                className="mt-5 w-full rounded-xl bg-white border border-white px-4 py-2.5 text-sm font-bold text-[#0F172A] transition-all hover:bg-slate-200 hover:text-black relative z-10 shadow-sm hover:shadow"
                             >
                                 Simulate
                             </button>
@@ -85,7 +85,7 @@ export default function SubjectCardsGrid({
                 })}
 
                 {!filtered.length ? (
-                    <div className="col-span-full rounded-2xl border-2 border-dashed border-slate-200 bg-white/50 p-8 text-center text-sm font-medium text-slate-500 animate-fade-in">
+                    <div className="col-span-full rounded-2xl border-2 border-dashed border-white/20 bg-white/5 p-8 text-center text-sm font-medium text-white/60 animate-fade-in">
                         No subjects match your filters.
                     </div>
                 ) : null}

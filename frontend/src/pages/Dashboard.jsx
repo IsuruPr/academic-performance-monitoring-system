@@ -114,36 +114,22 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 relative overflow-hidden font-sans">
-      {/* Background ambient light */}
-      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-blue-300/30 blur-[120px] pointer-events-none"></div>
-      <div className="absolute bottom-[10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-300/20 blur-[120px] pointer-events-none"></div>
-
+    <div className="min-h-screen relative overflow-hidden text-white pt-16">
       <div className="mx-auto max-w-6xl p-6 relative z-10 animate-fade-in">
         {/* Header */}
         <div className="mb-8 flex flex-col gap-1 stagger-1">
           <div className="flex items-center justify-between gap-3">
             <div>
               <h1 className="text-4xl font-extrabold tracking-tight text-gradient mb-1">
-                Academic GPS
+                Dashboard Overview
               </h1>
-              <p className="text-sm font-medium text-slate-500">
+              <p className="text-sm font-medium text-white/60">
                 Smart plan • Priorities • Real-time simulation
               </p>
             </div>
-
-            <button
-              onClick={() => {
-                localStorage.removeItem("selectedSemesterId");
-                navigate("/select-semester");
-              }}
-              className="rounded-2xl border border-slate-200 bg-white/80 backdrop-blur-sm px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-white hover:shadow-md hover-lift transition-all"
-            >
-              Change Semester
-            </button>
           </div>
 
-          {err ? <p className="text-sm font-medium text-red-500 mt-2">{err}</p> : null}
+          {err ? <p className="text-sm font-medium text-red-400 mt-2">{err}</p> : null}
         </div>
 
         {/* Summary */}
@@ -159,8 +145,8 @@ export default function Dashboard() {
             onClick={() => setActiveTab("all")}
             className={`rounded-2xl px-5 py-2.5 text-sm font-bold border transition-all duration-300
               ${activeTab === "all"
-                ? "bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-500/30 -translate-y-0.5"
-                : "bg-white/80 text-slate-600 border-white/40 hover:bg-white hover:shadow-md backdrop-blur-sm"
+                ? "bg-white/20 text-white border-white/30 shadow-lg shadow-black/20 -translate-y-0.5"
+                : "bg-white/5 text-white/60 border-white/10 hover:bg-white/10 hover:text-white backdrop-blur-sm"
               }`}
           >
             All Subjects
@@ -170,16 +156,16 @@ export default function Dashboard() {
             onClick={() => setActiveTab("single")}
             className={`rounded-2xl px-5 py-2.5 text-sm font-bold border transition-all duration-300
               ${activeTab === "single"
-                ? "bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-500/30 -translate-y-0.5"
-                : "bg-white/80 text-slate-600 border-white/40 hover:bg-white hover:shadow-md backdrop-blur-sm"
+                ? "bg-white/20 text-white border-white/30 shadow-lg shadow-black/20 -translate-y-0.5"
+                : "bg-white/5 text-white/60 border-white/10 hover:bg-white/10 hover:text-white backdrop-blur-sm"
               }`}
           >
             Single Subject
           </button>
 
-          <div className="ml-auto text-sm text-slate-500 flex items-center">
+          <div className="ml-auto text-sm text-white/50 flex items-center">
             Semester:
-            <span className="ml-2 rounded-full bg-white border border-slate-200 px-3 py-1">
+            <span className="ml-2 rounded-full bg-white/10 border border-white/10 px-3 py-1 text-white">
               {semesterId}
             </span>
           </div>
@@ -192,7 +178,7 @@ export default function Dashboard() {
               {/* Filters */}
               <div className="glass rounded-3xl p-5">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="text-sm font-bold text-slate-700">
+                  <div className="text-sm font-bold text-white">
                     Filters & Sorting
                   </div>
 
@@ -200,20 +186,20 @@ export default function Dashboard() {
                     <select
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value)}
-                      className="rounded-2xl border-0 bg-white/80 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm outline-none focus:ring-2 focus:ring-blue-500/50 backdrop-blur-sm cursor-pointer"
+                      className="rounded-2xl border border-white/10 bg-[#0F172A] px-4 py-2 text-sm font-bold text-white shadow-sm outline-none focus:ring-2 focus:ring-white/30 cursor-pointer"
                     >
-                      <option value="priority">Sort: Priority</option>
-                      <option value="requiredFinal">Sort: Required Final</option>
-                      <option value="credits">Sort: Credits</option>
-                      <option value="difficulty">Sort: Difficulty</option>
+                      <option value="priority" className="bg-[#0F172A]">Sort: Priority</option>
+                      <option value="requiredFinal" className="bg-[#0F172A]">Sort: Required Final</option>
+                      <option value="credits" className="bg-[#0F172A]">Sort: Credits</option>
+                      <option value="difficulty" className="bg-[#0F172A]">Sort: Difficulty</option>
                     </select>
 
-                    <label className="flex items-center gap-2 text-sm font-medium text-slate-600 cursor-pointer hover:text-slate-800 transition-colors">
+                    <label className="flex items-center gap-2 text-sm font-bold text-white/70 cursor-pointer hover:text-white transition-colors">
                       <input
                         type="checkbox"
                         checked={showHighRiskOnly}
                         onChange={(e) => setShowHighRiskOnly(e.target.checked)}
-                        className="w-4 h-4 rounded text-blue-600 bg-white border-slate-300 focus:ring-blue-500 cursor-pointer"
+                        className="w-4 h-4 rounded text-blue-500 bg-white/10 border-white/30 focus:ring-blue-500 cursor-pointer appearance-none checked:bg-blue-500 border"
                       />
                       High Risk Only
                     </label>
@@ -237,16 +223,16 @@ export default function Dashboard() {
               <PriorityList items={plan?.priority ?? []} />
 
               <div className="glass rounded-3xl p-6 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-150 duration-700"></div>
-                <h2 className="text-xl font-bold text-slate-800 relative z-10">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-white/10 to-blue-500/10 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-150 duration-700"></div>
+                <h2 className="text-xl font-extrabold text-white relative z-10">
                   Quick What-If
                 </h2>
-                <p className="mt-2 text-sm text-slate-500 font-medium relative z-10">
+                <p className="mt-2 text-sm text-white/60 font-medium relative z-10">
                   Switch to Single Subject mode to simulate exam marks and predict your GPA instantly.
                 </p>
                 <button
                   onClick={() => setActiveTab("single")}
-                  className="mt-6 w-full rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-3.5 font-bold text-white shadow-lg shadow-blue-500/30 hover:shadow-offset hover:shadow-indigo-500/40 hover-lift relative z-10"
+                  className="mt-6 w-full rounded-full bg-white px-5 py-3 font-bold text-[#0F172A] shadow-lg shadow-black/20 hover:shadow-black/40 hover-lift relative z-10"
                 >
                   Open Simulator ✨
                 </button>
@@ -259,17 +245,17 @@ export default function Dashboard() {
         {activeTab === "single" && (
           <div className="mt-8 grid gap-8 lg:grid-cols-2 animate-slide-in-right">
             <div className="glass rounded-3xl p-6">
-              <h2 className="text-xl font-bold text-slate-800">
+              <h2 className="text-xl font-extrabold text-white">
                 Choose a Subject
               </h2>
 
               <select
-                className="mt-4 w-full rounded-2xl border-0 bg-slate-50/50 px-4 py-3 font-medium outline-none focus:ring-2 focus:ring-blue-500/50 cursor-pointer shadow-inner"
+                className="mt-4 w-full rounded-2xl border border-white/10 bg-[#0B132B] px-4 py-3 font-bold text-white outline-none focus:ring-2 focus:ring-white/30 cursor-pointer shadow-inner appearance-none"
                 value={selectedSubjectId}
                 onChange={(e) => setSelectedSubjectId(e.target.value)}
               >
                 {(plan?.requiredFinals ?? []).map((s) => (
-                  <option key={s.subjectId} value={s.subjectId}>
+                  <option key={s.subjectId} value={s.subjectId} className="bg-[#0B132B]">
                     {s.subjectName}
                   </option>
                 ))}
@@ -281,29 +267,29 @@ export default function Dashboard() {
                 );
                 if (!s)
                   return (
-                    <div className="mt-4 text-sm text-slate-500">
+                    <div className="mt-4 text-sm text-white/50 font-bold">
                       Select a subject to view details.
                     </div>
                   );
 
                 return (
-                  <div className="mt-6 rounded-2xl bg-gradient-to-br from-slate-50 to-blue-50/30 border border-slate-100 p-5 shadow-sm animate-fade-in">
-                    <div className="text-lg font-bold text-slate-800">
+                  <div className="mt-6 rounded-2xl bg-white/5 border border-white/10 p-5 shadow-sm animate-fade-in backdrop-blur-md">
+                    <div className="text-lg font-extrabold text-white">
                       {s.subjectName}
                     </div>
-                    <div className="mt-4 flex gap-4 text-sm font-medium text-slate-600">
-                      <div className="bg-white rounded-xl px-3 py-1.5 shadow-sm">Credits: <span className="font-bold text-slate-800">{s.credits}</span></div>
-                      <div className="bg-white rounded-xl px-3 py-1.5 shadow-sm">Difficulty: <span className="font-bold text-slate-800">{s.difficulty}</span></div>
+                    <div className="mt-4 flex gap-4 text-sm font-bold text-white/70">
+                      <div className="bg-white/10 rounded-xl px-3 py-1.5 shadow-sm border border-white/5">Credits: <span className="font-extrabold text-white">{s.credits}</span></div>
+                      <div className="bg-white/10 rounded-xl px-3 py-1.5 shadow-sm border border-white/5">Difficulty: <span className="font-extrabold text-white">{s.difficulty}</span></div>
                     </div>
                     <div className="mt-4 grid grid-cols-2 gap-4">
-                      <div className="bg-white rounded-xl p-3 shadow-sm border border-slate-100/50 text-center">
-                        <div className="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-1">CA Marks</div>
-                        <div className="text-xl font-bold text-slate-800">{s.caMarks}</div>
+                      <div className="bg-white/5 rounded-xl p-3 shadow-sm border border-white/10 text-center">
+                        <div className="text-xs text-white/50 font-extrabold uppercase tracking-wider mb-1">CA Marks</div>
+                        <div className="text-xl font-bold text-white">{s.caMarks}</div>
                       </div>
-                      <div className="bg-white rounded-xl p-3 shadow-sm border border-slate-100/50 text-center relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-12 h-12 bg-blue-100 rounded-full blur-xl -mr-6 -mt-6"></div>
-                        <div className="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-1 relative z-10">Required Final</div>
-                        <div className="text-xl font-bold text-blue-600 relative z-10">{s.requiredFinal}</div>
+                      <div className="bg-white/10 rounded-xl p-3 shadow-sm border border-white/20 text-center relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-12 h-12 bg-white/20 rounded-full blur-xl -mr-6 -mt-6"></div>
+                        <div className="text-xs text-white/50 font-extrabold uppercase tracking-wider mb-1 relative z-10">Required Final</div>
+                        <div className="text-xl font-extrabold text-white relative z-10">{s.requiredFinal}</div>
                       </div>
                     </div>
                   </div>
