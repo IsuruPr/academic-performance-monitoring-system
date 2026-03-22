@@ -19,19 +19,19 @@
     }
 
     .glass-red {
-        @apply bg-[#1a1a1a]/70 backdrop-blur-2xl border border-red-500/40 shadow-[0_8px_32px_0_rgba(239, 68, 68, 0.1)] relative overflow-hidden text-white;
+        @apply bg-[#1a1a1a]/70 backdrop-blur-2xl border border-red-500/40 shadow-[0_8px_32px_0_rgba(239,68,68,0.1)] relative overflow-hidden text-white;
         border-radius: 1.5rem;
         box-shadow: inset 0 0 20px rgba(239, 68, 68, 0.05), 0 8px 32px 0 rgba(239, 68, 68, 0.1);
     }
 
     .glass-green {
-        @apply bg-[#1a1a1a]/70 backdrop-blur-2xl border border-green-500/40 shadow-[0_8px_32px_0_rgba(34, 197, 94, 0.1)] relative overflow-hidden text-white;
+        @apply bg-[#1a1a1a]/70 backdrop-blur-2xl border border-green-500/40 shadow-[0_8px_32px_0_rgba(34,197,94,0.1)] relative overflow-hidden text-white;
         border-radius: 1.5rem;
         box-shadow: inset 0 0 20px rgba(34, 197, 94, 0.05), 0 8px 32px 0 rgba(34, 197, 94, 0.1);
     }
 
     .glass-blue {
-        @apply bg-[#1a1a1a]/70 backdrop-blur-2xl border border-[#3b82f6]/40 shadow-[0_8px_32px_0_rgba(59, 130, 246, 0.1)] relative overflow-hidden text-white;
+        @apply bg-[#1a1a1a]/70 backdrop-blur-2xl border border-[#3b82f6]/40 shadow-[0_8px_32px_0_rgba(59,130,246,0.1)] relative overflow-hidden text-white;
         border-radius: 1.5rem;
         box-shadow: inset 0 0 20px rgba(59, 130, 246, 0.05), 0 8px 32px 0 rgba(59, 130, 246, 0.1);
     }

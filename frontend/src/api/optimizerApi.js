@@ -44,7 +44,7 @@ export async function fetchAiStudyPlan(planData) {
     try {
       const errorData = await res.json();
       errMessage = errorData.message || errMessage;
-    } catch (e) {
+    } catch {
       errMessage = `${errMessage}: ${res.status}`;
     }
     throw new Error(errMessage);

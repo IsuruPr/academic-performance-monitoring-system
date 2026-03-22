@@ -6,7 +6,6 @@ import PriorityList from "../components/PriorityList";
 import WhatIfPanel from "../components/WhatIfPanel";
 import SubjectCardsGrid from "../components/SubjectCardsGrid";
 import { useNavigate } from "react-router-dom";
-import AnalyticsCharts from "../components/AnalyticsCharts";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -108,6 +107,7 @@ export default function Dashboard() {
     }, 250);
 
     return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSubjectId, assumedFinal, semesterId]); // ✅ avoid loops
 
   if (!semesterId) return null;
@@ -259,9 +259,10 @@ export default function Dashboard() {
                   </button>
                   <button
                     onClick={handleGenerateAiPlan}
-                    className="flex-1 rounded-xl bg-[#22c55e] px-3 py-3 font-bold text-black shadow-lg shadow-[#22c55e]/20 hover:shadow-[#22c55e]/40 hover-lift relative z-10 uppercase tracking-widest text-xs flex items-center justify-center gap-2"
+                    className="group flex-1 rounded-xl bg-linear-to-r from-[#16a34a] to-[#22c55e] px-3 py-3 font-bold text-black shadow-[0_0_15px_rgba(34,197,94,0.3)] hover:shadow-[0_0_25px_rgba(34,197,94,0.5)] transition-all duration-300 relative z-10 uppercase tracking-widest text-xs flex items-center justify-center overflow-hidden hover-lift"
                   >
-                    AI Strategy ✨
+                    <div className="absolute top-0 -left-full w-full h-full bg-linear-to-r from-transparent via-white/30 to-transparent group-hover:animate-[shine_1.5s_ease-in-out_infinite]"></div>
+                    <span className="relative z-10 text-black">AI Strategy</span>
                   </button>
                 </div>
               </div>
@@ -337,8 +338,14 @@ export default function Dashboard() {
           </div>
         )}
 
-        <div className="mt-12 animate-slide-up stagger-5">
-          <AnalyticsCharts plan={plan} />
+        <div className="mt-12 flex justify-center animate-slide-up stagger-5 pb-12">
+          <button
+            onClick={() => navigate('/analytics', { state: { plan } })}
+            className="group relative rounded-full bg-linear-to-r from-[#1d4ed8] to-[#3b82f6] px-10 py-4 font-extrabold text-white shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:shadow-[0_0_35px_rgba(59,130,246,0.5)] transition-all duration-300 uppercase tracking-widest hover-lift text-sm overflow-hidden"
+          >
+            <div className="absolute top-0 -left-full w-full h-full bg-linear-to-r from-transparent via-white/20 to-transparent group-hover:animate-[shine_1.5s_ease-in-out_infinite]"></div>
+            <span className="relative z-10">View Performance Graphs</span>
+          </button>
         </div>
       </div>
 

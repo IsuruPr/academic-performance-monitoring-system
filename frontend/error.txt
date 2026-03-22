@@ -1,0 +1,22 @@
+
+> frontend@0.0.0 build
+> vite build
+
+[36mvite v7.3.1 [32mbuilding client environment for production...[36m[39m
+transforming...
+[32m✓[39m 9 modules transformed.
+
+[31m✗[39m Build failed in 253ms
+[31merror during build:
+[31m[@tailwindcss/vite:generate:build] Cannot apply unknown utility class `shadow-[0_8px_32px_0_rgba(239,`[31m
+file: [36mD:/AcadamiX/frontend/src/index.css[31m
+    at onInvalidCandidate (file:///D:/AcadamiX/frontend/node_modules/tailwindcss/dist/chunk-L5IEUH3R.mjs:21:1511)
+    at $e (file:///D:/AcadamiX/frontend/node_modules/tailwindcss/dist/chunk-L5IEUH3R.mjs:16:36740)
+    at file:///D:/AcadamiX/frontend/node_modules/tailwindcss/dist/chunk-L5IEUH3R.mjs:21:355
+    at Ar (file:///D:/AcadamiX/frontend/node_modules/tailwindcss/dist/chunk-L5IEUH3R.mjs:3:1733)
+    at I (file:///D:/AcadamiX/frontend/node_modules/tailwindcss/dist/chunk-L5IEUH3R.mjs:3:1377)
+    at Ce (file:///D:/AcadamiX/frontend/node_modules/tailwindcss/dist/chunk-L5IEUH3R.mjs:21:172)
+    at Gi (file:///D:/AcadamiX/frontend/node_modules/tailwindcss/dist/chunk-L5IEUH3R.mjs:38:294)
+    at async ao (file:///D:/AcadamiX/frontend/node_modules/tailwindcss/dist/chunk-L5IEUH3R.mjs:38:631)
+    at async vf (file:///D:/AcadamiX/frontend/node_modules/tailwindcss/dist/chunk-L5IEUH3R.mjs:38:1406)
+    at async uu (file:///D:/AcadamiX/frontend/node_modules/@tailwindcss/node/dist/index.mjs:10:3458)[39m

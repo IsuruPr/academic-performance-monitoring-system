@@ -1,3 +1,15 @@
+const Card = ({ title, value, sub, customClass, delay, glowClass }) => {
+  return (
+    <div className={`${customClass || 'glass'} p-4 hover-lift animate-slide-up ${delay || ''} w-56 h-56 mx-auto rounded-full! flex flex-col items-center justify-center text-center`}>
+      <div className={`absolute -right-6 -top-6 h-32 w-32 rounded-full blur-3xl pointer-events-none ${glowClass}`}></div>
+
+      <div className="text-sm font-bold tracking-wide uppercase text-white/50 relative z-10">{title}</div>
+      <div className="mt-2 text-5xl font-black tracking-tight text-white relative z-10">{value}</div>
+      {sub ? <div className="mt-2 text-xs font-bold text-white/70 relative z-10 px-2">{sub}</div> : null}
+    </div>
+  );
+};
+
 export default function SummaryCards({ currentGpa, targetGpa, gap }) {
   const currentVal = Number(currentGpa ?? 0);
   const targetVal = Number(targetGpa ?? 0);
@@ -6,18 +18,6 @@ export default function SummaryCards({ currentGpa, targetGpa, gap }) {
   const currentClass = "glass-red";
   const targetClass = "glass-green";
   const gapClass = "glass-blue";
-
-  const Card = ({ title, value, sub, customClass, delay, glowClass }) => {
-    return (
-      <div className={`${customClass || 'glass'} p-6 hover-lift animate-slide-up ${delay || ''}`}>
-        <div className={`absolute -right-6 -top-6 h-32 w-32 rounded-full blur-3xl pointer-events-none ${glowClass}`}></div>
-
-        <div className="text-sm font-bold tracking-wide uppercase text-white/50 relative z-10">{title}</div>
-        <div className="mt-3 text-5xl font-black tracking-tight text-white relative z-10">{value}</div>
-        {sub ? <div className="mt-3 text-xs font-bold text-white/70 relative z-10">{sub}</div> : null}
-      </div>
-    );
-  };
 
   return (
     <div className="grid gap-5 sm:grid-cols-3">
