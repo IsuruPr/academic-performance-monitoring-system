@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 export default function Dashboard() {
   const navigate = useNavigate();
   const semesterId = localStorage.getItem("selectedSemesterId");
+  const userTargetGpa = parseFloat(localStorage.getItem("targetGpa") ?? "0");
 
   const [sortBy, setSortBy] = useState("priority"); // priority | requiredFinal | credits | difficulty
   const [showHighRiskOnly, setShowHighRiskOnly] = useState(false);
@@ -147,6 +148,12 @@ export default function Dashboard() {
                 Smart plan • Priorities • Real-time simulation
               </p>
             </div>
+            {userTargetGpa > 0 && (
+              <div className="flex flex-col items-center justify-center px-5 py-3 rounded-2xl bg-[#22c55e]/10 border border-[#22c55e]/30 text-center shrink-0">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-[#22c55e]/80">Target GPA</span>
+                <span className="text-3xl font-black text-[#22c55e] leading-tight">{userTargetGpa.toFixed(2)}</span>
+              </div>
+            )}
           </div>
 
           {err ? <p className="text-sm font-medium text-red-400 mt-2">{err}</p> : null}
@@ -155,7 +162,7 @@ export default function Dashboard() {
         {/* Summary */}
         <SummaryCards
           currentGpa={liveCurrentGpa ?? plan?.currentGpa}
-          targetGpa={plan?.targetGpa}
+          targetGpa={userTargetGpa > 0 ? userTargetGpa : plan?.targetGpa}
           gap={liveGap ?? plan?.gap}
         />
 
@@ -334,6 +341,7 @@ export default function Dashboard() {
               onChangeFinal={setAssumedFinal}
               liveCurrentGpa={liveCurrentGpa ?? plan?.currentGpa}
               liveGap={liveGap ?? plan?.gap}
+              targetGpa={userTargetGpa > 0 ? userTargetGpa : plan?.targetGpa}
             />
           </div>
         )}

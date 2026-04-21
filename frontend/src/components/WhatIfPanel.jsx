@@ -5,7 +5,8 @@ export default function WhatIfPanel({
   onChangeSubject,
   onChangeFinal,
   liveCurrentGpa,
-  liveGap
+  liveGap,
+  targetGpa,
 }) {
   const gapVal = Number(liveGap ?? 0);
   const isGood = gapVal <= 0;
@@ -25,10 +26,20 @@ export default function WhatIfPanel({
   return (
     <div className="glass rounded-3xl p-6 relative overflow-hidden animate-slide-in-right stagger-2 bg-[#232323]">
 
-      <h2 className="text-xl font-extrabold text-white relative z-10">What-If Simulator</h2>
-      <p className="mt-2 text-sm text-white/60 font-medium relative z-10">
-        Adjust the slider to simulate a final exam mark and see its impact instantly.
-      </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-extrabold text-white relative z-10">What-If Simulator</h2>
+          <p className="mt-1 text-sm text-white/60 font-medium relative z-10">
+            Adjust the slider to simulate a final exam mark and see its impact instantly.
+          </p>
+        </div>
+        {targetGpa > 0 && (
+          <div className="shrink-0 flex flex-col items-center justify-center px-4 py-2 rounded-2xl bg-[#22c55e]/10 border border-[#22c55e]/30">
+            <span className="text-[9px] font-bold uppercase tracking-widest text-[#22c55e]/70">My Target</span>
+            <span className="text-xl font-black text-[#22c55e]">{Number(targetGpa).toFixed(2)}</span>
+          </div>
+        )}
+      </div>
 
       <div className="mt-8 grid gap-6 sm:grid-cols-2 relative z-10">
         <div className="space-y-2">
@@ -74,13 +85,17 @@ export default function WhatIfPanel({
         {msgText}
       </div>
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 relative z-10">
+      <div className="mt-8 grid gap-4 sm:grid-cols-3 relative z-10">
         <div className="rounded-2xl border border-[#333333] bg-[#1a1a1a] p-4 shadow-sm hover:shadow-lg transition-shadow relative overflow-hidden group">
           <div className="text-[10px] font-bold uppercase tracking-wider text-[#a3a3a3] mb-1">New Current GPA</div>
           <div className="text-3xl font-black text-white transition-transform group-hover:scale-105 origin-left">{Number(liveCurrentGpa ?? 0).toFixed(2)}</div>
         </div>
+        <div className="rounded-2xl border border-[#22c55e]/30 bg-[#22c55e]/5 p-4 shadow-sm hover:shadow-lg transition-shadow relative overflow-hidden group">
+          <div className="text-[10px] font-bold uppercase tracking-wider text-[#22c55e]/70 mb-1">Your Target GPA</div>
+          <div className="text-3xl font-black text-[#22c55e] transition-transform group-hover:scale-105 origin-left">{Number(targetGpa ?? 0).toFixed(2)}</div>
+        </div>
         <div className="rounded-2xl border border-[#333333] bg-[#1a1a1a] p-4 shadow-sm hover:shadow-lg transition-shadow relative overflow-hidden group">
-          <div className="text-[10px] font-bold uppercase tracking-wider text-[#a3a3a3] mb-1">New Gap</div>
+          <div className="text-[10px] font-bold uppercase tracking-wider text-[#a3a3a3] mb-1">Gap to Target</div>
           <div className={`text-3xl font-black transition-transform group-hover:scale-105 origin-left ${isGood ? 'text-[#22c55e]' : isOkay ? 'text-yellow-500' : 'text-red-500'}`}>
             {gapVal >= 0 ? `+${gapVal.toFixed(2)}` : gapVal.toFixed(2)}
           </div>

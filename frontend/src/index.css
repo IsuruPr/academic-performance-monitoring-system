@@ -19,19 +19,19 @@
     }
 
     .glass-red {
-        @apply bg-[#1a1a1a]/70 backdrop-blur-2xl border border-red-500/40 shadow-[0_8px_32px_0_rgba(239,68,68,0.1)] relative overflow-hidden text-white;
+        @apply bg-[#1a1a1a]/70 backdrop-blur-2xl border border-red-500/40 relative overflow-hidden text-white;
         border-radius: 1.5rem;
         box-shadow: inset 0 0 20px rgba(239, 68, 68, 0.05), 0 8px 32px 0 rgba(239, 68, 68, 0.1);
     }
 
     .glass-green {
-        @apply bg-[#1a1a1a]/70 backdrop-blur-2xl border border-green-500/40 shadow-[0_8px_32px_0_rgba(34,197,94,0.1)] relative overflow-hidden text-white;
+        @apply bg-[#1a1a1a]/70 backdrop-blur-2xl border border-green-500/40 relative overflow-hidden text-white;
         border-radius: 1.5rem;
         box-shadow: inset 0 0 20px rgba(34, 197, 94, 0.05), 0 8px 32px 0 rgba(34, 197, 94, 0.1);
     }
 
     .glass-blue {
-        @apply bg-[#1a1a1a]/70 backdrop-blur-2xl border border-[#3b82f6]/40 shadow-[0_8px_32px_0_rgba(59,130,246,0.1)] relative overflow-hidden text-white;
+        @apply bg-[#1a1a1a]/70 backdrop-blur-2xl border border-[#3b82f6]/40 relative overflow-hidden text-white;
         border-radius: 1.5rem;
         box-shadow: inset 0 0 20px rgba(59, 130, 246, 0.05), 0 8px 32px 0 rgba(59, 130, 246, 0.1);
     }
@@ -57,6 +57,10 @@
         animation: slideInRight 0.5s ease-out forwards;
     }
 
+    .animate-spin-slow {
+        animation: spin 3s linear infinite;
+    }
+
     .stagger-1 {
         animation-delay: 100ms;
     }
@@ -79,13 +83,28 @@
 }
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
 
-    to {
-        opacity: 1;
-    }
+@keyframes driftA {
+    from { transform: translate(0, 0) scale(1); }
+    to   { transform: translate(60px, 40px) scale(1.15); }
+}
+
+@keyframes driftB {
+    from { transform: translate(0, 0) scale(1); }
+    to   { transform: translate(-50px, -60px) scale(1.1); }
+}
+
+@keyframes driftC {
+    from { transform: translate(0, 0) scale(1); }
+    to   { transform: translate(30px, -50px) scale(1.2); }
+}
+
+@keyframes floatUp {
+    0%, 100% { transform: translateY(0px); opacity: 0.4; }
+    50%       { transform: translateY(-18px); opacity: 1; }
 }
 
 @keyframes shine {
@@ -151,7 +170,22 @@ input[type=range]::-webkit-slider-thumb {
 
 body {
     @apply text-white antialiased selection:bg-[#22c55e] selection:text-black;
-    background-color: #121212;
+    background-color: #0a0a0a;
+    background-image: url('/src/assets/semester_bg.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
     font-family: 'Poppins', system-ui, sans-serif;
     min-height: 100vh;
+}
+
+/* Global dark overlay on top of background image */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(8, 8, 8, 0.78);
+    backdrop-filter: blur(2px);
+    z-index: 0;
+    pointer-events: none;
 }

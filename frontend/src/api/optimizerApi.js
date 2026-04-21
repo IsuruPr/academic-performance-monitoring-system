@@ -2,7 +2,10 @@ const API_BASE = "http://127.0.0.1:5000/api/optimizer";
 
 /* ✅ PLAN FETCH - Semester only */
 export async function fetchPlan(semesterId) {
-  const url = `${API_BASE}/plan?semesterId=${encodeURIComponent(semesterId)}`;
+  const targetGpa = localStorage.getItem("targetGpa");
+  let url = `${API_BASE}/plan?semesterId=${encodeURIComponent(semesterId)}`;
+  if (targetGpa) url += `&targetGpa=${encodeURIComponent(targetGpa)}`;
+
   const res = await fetch(url);
 
   if (!res.ok) {
@@ -14,6 +17,7 @@ export async function fetchPlan(semesterId) {
 
 /* ✅ WHAT-IF - Semester only */
 export async function fetchWhatIf({ semesterId, subjectId, assumedFinal }) {
+  const targetGpa = localStorage.getItem("targetGpa");
   const res = await fetch(`${API_BASE}/whatif`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -21,6 +25,7 @@ export async function fetchWhatIf({ semesterId, subjectId, assumedFinal }) {
       semesterId,
       subjectId,
       assumedFinal,
+      ...(targetGpa ? { targetGpa: parseFloat(targetGpa) } : {}),
     }),
   });
 
