@@ -1,0 +1,573 @@
+import { useEffect, useMemo, useState } from "react";
+import { fetchPlan, fetchWhatIf, fetchAiStudyPlan, fetchAiSubjectPlan } from "../api/optimizerApi";
+import ReactMarkdown from "react-markdown";
+import SummaryCards from "../components/SummaryCards";
+import PriorityList from "../components/PriorityList";
+import WhatIfPanel from "../components/WhatIfPanel";
+import SubjectCardsGrid from "../components/SubjectCardsGrid";
+import { useNavigate } from "react-router-dom";
+
+export default function Dashboard() {
+  const navigate = useNavigate();
+  const semesterId = localStorage.getItem("selectedSemesterId");
+
+  const [step, setStep] = useState("askGpa");
+  const [targetGpaInput, setTargetGpaInput] = useState("3.5");
+  const [gpaError, setGpaError] = useState("");
+
+  const [sortBy, setSortBy] = useState("priority"); // priority | requiredFinal | credits | difficulty
+  const [showHighRiskOnly, setShowHighRiskOnly] = useState(false);
+
+  const [activeTab, setActiveTab] = useState("all"); // "all" | "single"
+  const [selectedSubjectId, setSelectedSubjectId] = useState("");
+
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState("");
+  const [plan, setPlan] = useState(null);
+
+  // What-if UI state
+  const [assumedFinal, setAssumedFinal] = useState(60);
+
+  // Live output after what-if
+  const [liveCurrentGpa, setLiveCurrentGpa] = useState(null);
+  const [liveGap, setLiveGap] = useState(null);
+
+  // AI Plan Generation State
+  const [isGeneratingAi, setIsGeneratingAi] = useState(false);
+  const [aiPlanString, setAiPlanString] = useState("");
+  const [showAiModal, setShowAiModal] = useState(false);
+  const [aiModalSubject, setAiModalSubject] = useState(null); // null = full plan, object = subject plan
+
+  const handleGenerateAiPlan = async () => {
+    if (!plan) return;
+    try {
+      setIsGeneratingAi(true);
+      setAiModalSubject(null);
+      setAiPlanString("");
+      setShowAiModal(true);
+      const data = await fetchAiStudyPlan(plan);
+      setAiPlanString(data.markdown);
+    } catch (e) {
+      setAiPlanString("Failed to generate study plan: " + e.message);
+    } finally {
+      setIsGeneratingAi(false);
+    }
+  };
+
+  const handleGenerateSubjectPlan = async (subject) => {
+    if (!subject) return;
+    try {
+      setIsGeneratingAi(true);
+      setAiModalSubject(subject);
+      setAiPlanString("");
+      setShowAiModal(true);
+      const data = await fetchAiSubjectPlan({
+        ...subject,
+        currentGpa: liveCurrentGpa ?? plan?.currentGpa,
+        targetGpa: plan?.targetGpa,
+      });
+      setAiPlanString(data.markdown);
+    } catch (e) {
+      setAiPlanString("Failed to generate subject plan: " + e.message);
+    } finally {
+      setIsGeneratingAi(false);
+    }
+  };
+
+  const onAnalyzeClick = async () => {
+    const val = parseFloat(targetGpaInput);
+    if (isNaN(val) || val < 0 || val > 4) {
+      setGpaError("Please enter a valid GPA between 0.0 and 4.0");
+      return;
+    }
+    setGpaError("");
+
+    if (!semesterId) {
+      setGpaError("No semester selected. Please select a semester first.");
+      return;
+    }
+
+    setStep("dashboard");
+
+    try {
+      setLoading(true);
+      setErr("");
+
+      const data = await fetchPlan(semesterId, val);
+      setPlan(data);
+
+      const first = data?.requiredFinals?.[0];
+      if (first?.subjectId) setSelectedSubjectId(first.subjectId);
+
+      setLiveCurrentGpa(data.currentGpa);
+      setLiveGap(data.gap);
+    } catch (e) {
+      if (e.message?.includes("401") || e.message?.includes("Authorization")) {
+        navigate("/login");
+        return;
+      }
+      if (e.message?.includes("No module data found")) {
+        setErr("No module data found for this semester. Please set up your profile.");
+        setStep("askGpa");
+      } else {
+        setErr(e.message || "Failed to load plan");
+        setStep("askGpa");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const subjectsForSelect = useMemo(() => {
+    if (!plan?.requiredFinals) return [];
+    return plan.requiredFinals.map((s) => ({
+      subjectId: s.subjectId,
+      subjectName: s.subjectName,
+    }));
+  }, [plan]);
+
+  // Trigger what-if when subject or assumedFinal changes
+  useEffect(() => {
+    if (step !== "dashboard" || !semesterId || !plan || !selectedSubjectId) return;
+
+    const timer = setTimeout(async () => {
+      try {
+        const data = await fetchWhatIf({
+          semesterId,
+          subjectId: selectedSubjectId,
+          assumedFinal,
+          targetGpa: parseFloat(targetGpaInput)
+        });
+
+        setLiveCurrentGpa(data.currentGpa);
+        setLiveGap(data.gap);
+        setPlan(data);
+      } catch (e) {
+        if (e.message?.includes("401") || e.message?.includes("Authorization")) {
+          navigate("/login");
+          return;
+        }
+        setErr(e.message || "What-if failed");
+      }
+    }, 250);
+
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedSubjectId, assumedFinal, semesterId]); // ✅ avoid loops
+
+  if (step === "askGpa") {
+    const gpaPresets = [
+        { label: "2.0", value: "2.0", color: "text-yellow-400 border-yellow-400/30 bg-yellow-400/10" },
+        { label: "2.5", value: "2.5", color: "text-orange-400 border-orange-400/30 bg-orange-400/10" },
+        { label: "3.0", value: "3.0", color: "text-blue-400 border-blue-400/30 bg-blue-400/10" },
+        { label: "3.5", value: "3.5", color: "text-[#22c55e] border-[#22c55e]/30 bg-[#22c55e]/10" },
+        { label: "4.0", value: "4.0", color: "text-purple-400 border-purple-400/30 bg-purple-400/10" },
+    ];
+
+    return (
+        <div className="min-h-screen relative overflow-hidden flex items-center justify-center p-6 font-sans">
+            <div className="mx-auto w-full max-w-md pt-8 relative z-10 flex flex-col items-center animate-fade-in">
+                <div className="glass rounded-3xl p-10 relative overflow-hidden shadow-2xl bg-[#1a1a1a] w-full">
+                    <button
+                        onClick={() => navigate(-1)}
+                        className="mb-6 flex items-center gap-2 text-white/50 hover:text-white transition-colors text-sm font-bold"
+                    >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                        Back
+                    </button>
+
+                    <h2 className="text-3xl font-extrabold text-white mb-2 tracking-tight">
+                        What's your <span className="text-[#22c55e]">Target GPA?</span>
+                    </h2>
+                    <p className="text-sm font-medium text-white/60 mb-6">
+                        For your current semester. This drives all recommendations and calculations.
+                    </p>
+
+                    <div className="flex flex-wrap gap-2 mb-6">
+                        {gpaPresets.map(p => (
+                            <button
+                                key={p.value}
+                                onClick={() => { setTargetGpaInput(p.value); setGpaError(""); }}
+                                className={`px-4 py-1.5 rounded-full border text-sm font-extrabold transition-all hover:scale-105 ${parseFloat(targetGpaInput) === parseFloat(p.value) ? p.color + " scale-105" : "border-white/10 text-white/50 bg-white/5 hover:bg-white/10 hover:text-white"}`}
+                            >
+                                {p.label}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="mb-4">
+                        <div className="flex justify-between items-center mb-2">
+                            <label className="text-[11px] font-bold text-white/70 uppercase tracking-widest">Target GPA</label>
+                            <span className="text-2xl font-black text-[#22c55e]">{parseFloat(targetGpaInput || 0).toFixed(2)}</span>
+                        </div>
+                        <input
+                            type="range"
+                            min="0"
+                            max="4"
+                            step="0.1"
+                            value={parseFloat(targetGpaInput) || 0}
+                            onChange={(e) => { setTargetGpaInput(e.target.value); setGpaError(""); }}
+                            className="w-full"
+                        />
+                    </div>
+
+                    <div className="relative mb-2">
+                        <input
+                            type="number"
+                            min="0"
+                            max="4"
+                            step="0.1"
+                            value={targetGpaInput}
+                            onChange={(e) => { setTargetGpaInput(e.target.value); setGpaError(""); }}
+                            placeholder="e.g. 3.5"
+                            className={`w-full rounded-xl border px-5 py-4 font-bold text-white bg-[#232323] outline-none transition-all focus:ring-1 ${gpaError ? 'border-red-500 ring-red-500' : 'border-[#333333] focus:border-[#22c55e] focus:ring-[#22c55e]'}`}
+                        />
+                        <span className="absolute right-5 top-1/2 -translate-y-1/2 text-white/40 font-bold text-sm">/ 4.0</span>
+                    </div>
+
+                    {gpaError && <p className="text-red-400 text-xs font-bold mb-3 ml-1">{gpaError}</p>}
+
+                    {!semesterId && (
+                      <div className="mt-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-semibold">
+                        No semester selected. Please{" "}
+                        <button onClick={() => navigate("/select-semester")} className="underline text-[#22c55e]">
+                          select a semester
+                        </button>{" "}
+                        first.
+                      </div>
+                    )}
+
+                    <button
+                        onClick={onAnalyzeClick}
+                        disabled={loading || !semesterId}
+                        className="mt-6 w-full rounded-xl bg-[#22c55e] px-6 py-4 font-black text-black shadow-lg shadow-[#22c55e]/20 hover:shadow-[#22c55e]/40 hover:bg-[#16a34a] flex items-center justify-center gap-2 group transition-all uppercase tracking-widest disabled:opacity-50"
+                    >
+                        {loading ? "Generating Plan..." : "Access System"}
+                        {!loading && <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>}
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-transparent">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-14 h-14 border-4 border-[#333333] border-t-[#22c55e] rounded-full animate-spin" />
+          <p className="text-white/40 text-xs font-black uppercase tracking-[0.3em] animate-pulse">Loading plan…</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (err && !plan) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center gap-5">
+        <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center text-2xl">⚠️</div>
+        <div>
+          <p className="text-white font-black text-lg mb-1">Failed to load plan</p>
+          <p className="text-red-400 text-sm font-medium max-w-sm">{err}</p>
+        </div>
+        <button
+          onClick={() => { setErr(""); setStep("askGpa"); }}
+          className="px-6 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-xs font-black uppercase tracking-widest hover:bg-white/10 transition-all"
+        >
+          Try Again
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen relative overflow-hidden text-white pt-16">
+      <div className="mx-auto max-w-6xl p-6 relative z-10 animate-fade-in">
+        {/* Header */}
+        <div className="mb-8 flex flex-col gap-1 stagger-1">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h1 className="text-4xl font-extrabold tracking-tight text-white mb-1">
+                Dashboard <span className="text-[#22c55e]">Overview</span>
+              </h1>
+              <p className="text-sm font-medium text-white/60">
+                Smart plan • Priorities • Real-time simulation
+              </p>
+            </div>
+            {plan && plan.targetGpa > 0 && (
+              <div className="flex flex-col items-center justify-center px-5 py-3 rounded-2xl bg-[#22c55e]/10 border border-[#22c55e]/30 text-center shrink-0">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-[#22c55e]/80">Target GPA</span>
+                <span className="text-3xl font-black text-[#22c55e] leading-tight">{plan.targetGpa.toFixed(2)}</span>
+              </div>
+            )}
+          </div>
+
+          {err ? <p className="text-sm font-medium text-red-400 mt-2">{err}</p> : null}
+        </div>
+
+        {/* Summary */}
+        <SummaryCards
+          currentGpa={liveCurrentGpa ?? plan?.currentGpa}
+          targetGpa={plan?.targetGpa}
+          gap={liveGap ?? plan?.gap}
+        />
+
+        {/* Tabs */}
+        <div className="mt-8 flex gap-3 animate-slide-up stagger-4">
+          <button
+            onClick={() => setActiveTab("all")}
+            className={`rounded-2xl px-5 py-2.5 text-sm font-bold border transition-all duration-300
+              ${activeTab === "all"
+                ? "bg-[#22c55e] text-black border-[#22c55e] shadow-lg shadow-[#22c55e]/20 -translate-y-0.5"
+                : "bg-transparent text-white/60 border-[#333333] hover:bg-[#232323] hover:text-white"
+              }`}
+          >
+            All Subjects
+          </button>
+
+          <button
+            onClick={() => setActiveTab("single")}
+            className={`rounded-2xl px-5 py-2.5 text-sm font-bold border transition-all duration-300
+              ${activeTab === "single"
+                ? "bg-[#22c55e] text-black border-[#22c55e] shadow-lg shadow-[#22c55e]/20 -translate-y-0.5"
+                : "bg-transparent text-white/60 border-[#333333] hover:bg-[#232323] hover:text-white"
+              }`}
+          >
+            Single Subject
+          </button>
+
+          <div className="ml-auto text-sm text-white/50 flex items-center">
+            Semester:
+            <span className="ml-2 rounded-full bg-[#232323] border border-[#333333] px-3 py-1 text-[#22c55e] font-bold">
+              {semesterId || "Not selected"}
+            </span>
+          </div>
+        </div>
+
+        {/* All Subjects View */}
+        {activeTab === "all" && (
+          <div className="mt-8 grid gap-8 lg:grid-cols-2 animate-slide-up stagger-5">
+            <div className="space-y-8">
+              {/* Filters */}
+              <div className="glass rounded-3xl p-5">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="text-sm font-bold text-white">
+                    Filters & Sorting
+                  </div>
+
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value)}
+                      className="rounded-xl border border-[#333333] bg-[#1a1a1a] px-4 py-2 text-sm font-bold text-white shadow-sm outline-none focus:ring-2 focus:ring-[#22c55e] cursor-pointer"
+                    >
+                      <option value="priority" className="bg-[#1a1a1a]">Sort: Priority</option>
+                      <option value="requiredFinal" className="bg-[#1a1a1a]">Sort: Required Final</option>
+                      <option value="credits" className="bg-[#1a1a1a]">Sort: Credits</option>
+                      <option value="difficulty" className="bg-[#1a1a1a]">Sort: Difficulty</option>
+                    </select>
+
+                    <label className="flex items-center gap-2 text-sm font-bold text-white/70 cursor-pointer hover:text-white transition-colors">
+                      <input
+                        type="checkbox"
+                        checked={showHighRiskOnly}
+                        onChange={(e) => setShowHighRiskOnly(e.target.checked)}
+                        className="w-4 h-4 rounded text-blue-500 bg-white/10 border-white/30 focus:ring-blue-500 cursor-pointer appearance-none checked:bg-blue-500 border"
+                      />
+                      High Risk Only
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              {/* Subject Cards Grid */}
+              <SubjectCardsGrid
+                subjects={plan?.requiredFinals ?? []}
+                sortBy={sortBy}
+                showHighRiskOnly={showHighRiskOnly}
+                onSimulate={(subjectId) => {
+                  setSelectedSubjectId(subjectId);
+                  setActiveTab("single");
+                }}
+                onStudyPlan={(subject) => handleGenerateSubjectPlan(subject)}
+              />
+            </div>
+
+            <div className="space-y-8">
+              <PriorityList items={plan?.priority ?? []} />
+
+              <div className="glass rounded-3xl p-6 relative overflow-hidden group border-[#333333]">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-[#22c55e]/10 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-150 duration-700 pointer-events-none"></div>
+                <h2 className="text-xl font-extrabold text-white relative z-10">
+                  Quick What-If
+                </h2>
+                <p className="mt-2 text-sm text-white/60 font-medium relative z-10">
+                  Switch to Single Subject mode to simulate exam marks and predict your GPA instantly.
+                </p>
+                <div className="flex gap-4 mt-6">
+                  <button
+                    onClick={() => setActiveTab("single")}
+                    className="flex-1 rounded-xl bg-[#232323] px-3 py-3 font-bold text-white shadow-sm border border-[#333333] hover:bg-[#333333] transition-all relative z-10 uppercase tracking-widest text-xs"
+                  >
+                    Simulator Mode
+                  </button>
+                  <button
+                    onClick={handleGenerateAiPlan}
+                    className="group flex-1 rounded-xl bg-linear-to-r from-[#16a34a] to-[#22c55e] px-3 py-3 font-bold text-black shadow-[0_0_15px_rgba(34,197,94,0.3)] hover:shadow-[0_0_25px_rgba(34,197,94,0.5)] transition-all duration-300 relative z-10 uppercase tracking-widest text-xs flex items-center justify-center overflow-hidden hover-lift"
+                  >
+                    <div className="absolute top-0 -left-full w-full h-full bg-linear-to-r from-transparent via-white/30 to-transparent group-hover:animate-[shine_1.5s_ease-in-out_infinite]"></div>
+                    <span className="relative z-10 text-black">AI Strategy</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Single Subject View */}
+        {activeTab === "single" && (
+          <div className="mt-8 grid gap-8 lg:grid-cols-2 animate-slide-in-right">
+            <div className="glass rounded-3xl p-6">
+              <h2 className="text-xl font-extrabold text-white">
+                Choose a Subject
+              </h2>
+
+              <select
+                className="mt-4 w-full rounded-xl border border-[#333333] bg-[#1a1a1a] px-4 py-3 font-bold text-white outline-none focus:ring-2 focus:ring-[#22c55e] cursor-pointer shadow-inner appearance-none"
+                value={selectedSubjectId}
+                onChange={(e) => setSelectedSubjectId(e.target.value)}
+              >
+                {(plan?.requiredFinals ?? []).map((s) => (
+                  <option key={s.subjectId} value={s.subjectId} className="bg-[#1a1a1a]">
+                    {s.subjectName}
+                  </option>
+                ))}
+              </select>
+
+              {(() => {
+                const s = (plan?.requiredFinals ?? []).find(
+                  (x) => x.subjectId === selectedSubjectId
+                );
+                if (!s)
+                  return (
+                    <div className="mt-4 text-sm text-white/50 font-bold">
+                      Select a subject to view details.
+                    </div>
+                  );
+
+                return (
+                  <div className="mt-6 rounded-2xl bg-[#1a1a1a] border border-[#333333] p-5 shadow-sm animate-fade-in">
+                    <div className="text-lg font-extrabold text-[#22c55e]">
+                      {s.subjectName}
+                    </div>
+                    <div className="mt-4 flex gap-4 text-sm font-bold text-white/70">
+                      <div className="bg-[#232323] rounded-xl px-3 py-1.5 shadow-sm border border-[#333333]">Credits: <span className="font-extrabold text-white">{s.credits}</span></div>
+                      <div className="bg-[#232323] rounded-xl px-3 py-1.5 shadow-sm border border-[#333333]">Difficulty: <span className="font-extrabold text-white">{s.difficulty}</span></div>
+                    </div>
+                    <div className="mt-4 grid grid-cols-2 gap-4">
+                      <div className="bg-[#232323] rounded-xl p-3 shadow-sm border border-[#333333] text-center">
+                        <div className="text-xs text-white/50 font-extrabold uppercase tracking-wider mb-1">CA Marks</div>
+                        <div className="text-xl font-bold text-white">{s.caMarks}</div>
+                        <div className={`mt-1 text-[9px] font-black uppercase tracking-widest ${s.caSource === "db" ? "text-emerald-400" : s.caSource === "profile" ? "text-blue-400" : "text-amber-400"}`}>
+                          {s.caSource === "db" ? "✓ From DB" : s.caSource === "profile" ? "✓ From Profile" : "~ Estimated"}
+                        </div>
+                      </div>
+                      <div className="bg-[#22c55e]/10 rounded-xl p-3 shadow-sm border border-[#22c55e]/20 text-center relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-12 h-12 bg-[#22c55e]/20 rounded-full blur-xl -mr-6 -mt-6"></div>
+                        <div className="text-xs text-[#22c55e]/80 font-extrabold uppercase tracking-wider mb-1 relative z-10">Required Final</div>
+                        <div className="text-xl font-extrabold text-[#22c55e] relative z-10">{s.requiredFinal}</div>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => handleGenerateSubjectPlan(s)}
+                      className="mt-5 w-full rounded-xl bg-gradient-to-r from-purple-600 to-purple-500 px-4 py-3 text-sm font-bold text-white transition-all hover:from-purple-500 hover:to-purple-400 shadow-lg shadow-purple-500/20 flex items-center justify-center gap-2 uppercase tracking-wider"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
+                      AI Study Plan for this Subject
+                    </button>
+                  </div>
+                );
+              })()}
+            </div>
+
+            <WhatIfPanel
+              subjects={subjectsForSelect}
+              selectedSubjectId={selectedSubjectId}
+              assumedFinal={assumedFinal}
+              onChangeSubject={setSelectedSubjectId}
+              onChangeFinal={setAssumedFinal}
+              liveCurrentGpa={liveCurrentGpa ?? plan?.currentGpa}
+              liveGap={liveGap ?? plan?.gap}
+              targetGpa={plan?.targetGpa}
+            />
+          </div>
+        )}
+
+        <div className="mt-12 flex justify-center animate-slide-up stagger-5 pb-12">
+          <button
+            onClick={() => navigate('/analytics', { state: { plan } })}
+            className="group relative rounded-full bg-linear-to-r from-[#1d4ed8] to-[#3b82f6] px-10 py-4 font-extrabold text-white shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:shadow-[0_0_35px_rgba(59,130,246,0.5)] transition-all duration-300 uppercase tracking-widest hover-lift text-sm overflow-hidden"
+          >
+            <div className="absolute top-0 -left-full w-full h-full bg-linear-to-r from-transparent via-white/20 to-transparent group-hover:animate-[shine_1.5s_ease-in-out_infinite]"></div>
+            <span className="relative z-10">View Performance Graphs</span>
+          </button>
+        </div>
+      </div>
+
+      {/* AI Modal Overlay */}
+      {showAiModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-[#121212] border border-[#333333] rounded-3xl w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden relative">
+            <div className="p-6 border-b border-[#333333] flex justify-between items-center bg-[#1a1a1a] shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#22c55e]/10 flex items-center justify-center border border-[#22c55e]/20">
+                  <span className="text-xl">{aiModalSubject ? "📚" : "✨"}</span>
+                </div>
+                <div>
+                  <h2 className="text-xl font-extrabold text-white">
+                    {aiModalSubject ? `Study Plan — ${aiModalSubject.subjectName}` : "AI Action Plan"}
+                  </h2>
+                  <p className="text-xs text-[#22c55e] font-bold uppercase tracking-widest mt-1">Generated by AcadamiX Intelligence</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowAiModal(false)}
+                className="text-white/50 hover:text-white bg-[#232323] hover:bg-[#333333] rounded-full w-10 h-10 flex items-center justify-center transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-8 overflow-y-auto no-scrollbar flex-1">
+              {isGeneratingAi ? (
+                <div className="flex flex-col items-center justify-center h-full text-center py-20">
+                  <div className="w-16 h-16 border-4 border-[#333333] border-t-[#22c55e] rounded-full animate-spin mb-6"></div>
+                  <h3 className="text-xl font-bold text-white mb-2">Analyzing your profile...</h3>
+                  <p className="text-[#a3a3a3]">Synthesizing priority requirements and generating your tailored strategy.</p>
+                </div>
+              ) : (
+                <div className="prose prose-invert prose-green max-w-none 
+                  prose-headings:text-white prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl 
+                  prose-strong:text-[#22c55e] prose-a:text-[#22c55e] hover:prose-a:text-white
+                  prose-ul:border-l-2 prose-ul:border-[#333333] prose-ul:pl-4
+                  prose-li:marker:text-[#22c55e] prose-hr:border-[#333333]
+                  prose-p:text-[#d4d4d4] prose-p:leading-relaxed">
+                  <ReactMarkdown>{aiPlanString}</ReactMarkdown>
+                </div>
+              )}
+            </div>
+
+            <div className="p-6 border-t border-[#333333] bg-[#1a1a1a] flex justify-end shrink-0">
+              <button
+                onClick={() => setShowAiModal(false)}
+                className="rounded-lg bg-[#22c55e] px-6 py-2.5 font-bold text-black shadow-sm transition-all hover:bg-[#16a34a] uppercase tracking-wider text-sm"
+              >
+                Close Plan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
